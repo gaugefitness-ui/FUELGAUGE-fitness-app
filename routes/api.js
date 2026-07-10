@@ -99,7 +99,7 @@ router.post("/auth/register", async (req, res) => {
       verified: false,
       verifyCode: code,
       verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
-      admin: userCount === 0,
+      admin: false,
     });
     let emailSent = false;
     if (process.env.EMAIL_USER) {
@@ -267,7 +267,7 @@ router.post("/auth/google", async (req, res) => {
         avatar: picture || "",
         verified: true,
         googleId: googleId,
-        admin: userCount === 0,
+        admin: false,
       });
     }
 
@@ -334,7 +334,7 @@ router.get("/auth/google/callback", async (req, res) => {
         avatar: picture || "",
         verified: true,
         googleId: googleId,
-        admin: userCount === 0,
+        admin: false,
       });
     }
 
@@ -655,7 +655,7 @@ router.post("/whatsapp/send-otp", async (req, res) => {
         phone,
         verifyCode: code,
         verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
-        admin: userCount === 0,
+        admin: false,
       });
     }
     sendSMSOTP(phone, code).then(result => {
