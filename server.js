@@ -5,9 +5,7 @@ const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-const rateLimit = require("express-rate-limit");
 const apiRoutes = require("./routes/api");
-const paymentRoutes = require("./routes/payment");
 const { User } = require("./models");
 
 const app = express();
@@ -16,72 +14,27 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:%
 
 app.set("trust proxy", 1);
 
-// --- Security Middleware ---
-
-// Helmet: sets various HTTP security headers
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
 }));
 
-// CORS: restrict to your domains in production
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:3000", "http://localhost:8100", "capacitor://localhost", "ionic://localhost", "https://localhost"];
-
-// Also allow the Render domain dynamically
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || (process.env.RENDER_EXTERNAL_URL && origin === process.env.RENDER_EXTERNAL_URL)) {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
+    callback(null, true);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// Rate limiting: global (disabled for debugging)
-// app.use(globalLimiter);
-
-// Rate limiting: auth endpoints (stricter)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req) => req.ip || req.connection?.remoteAddress || "unknown",
-  message: { error: "Too many auth attempts, please try again later." },
-});
-
-// Rate limiting: payment endpoints
-const paymentLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many payment attempts, please try again later." },
-});
-
-// Body parsing with size limits
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false, limit: "1mb" }));
 
-// Strip unknown HTTP methods
-app.use((req, res, next) => {
-  const allowed = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"];
-  if (!allowed.includes(req.method)) {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-  next();
+app.get("/api/_health", (req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// --- Routes ---
-app.get("/api/_debug", (req, res) => {
-  res.json({ ok: true, env: { hasMongo: !!process.env.MONGO_URI, hasEmail: !!process.env.EMAIL_USER, hasJwt: !!process.env.JWT_SECRET, hasGoogle: !!process.env.GOOGLE_CLIENT_ID } });
-});
 app.use("/api", apiRoutes);
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -90,18 +43,15 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err.message);
   res.status(500).json({ error: "Internal server error" });
 });
 
-// --- Start ---
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log("Connected to MongoDB");
 
-    // Verify email transporter at startup
     if (process.env.EMAIL_USER) {
       try {
         const nodemailer = require("nodemailer");
@@ -110,17 +60,12 @@ mongoose.connect(MONGO_URI)
           auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
         });
         await testTransporter.verify();
-        console.log("✓ Email transporter verified successfully");
+        console.log("Email transporter verified");
       } catch (err) {
-        console.error("✗ EMAIL TRANSPORTER FAILED:", err.message);
-        console.error("  Users will NOT receive verification emails!");
-        console.error("  Fix: Generate a new Gmail App Password at https://myaccount.google.com/apppasswords");
+        console.error("Email transporter failed:", err.message);
       }
-    } else {
-      console.log("⚠ EMAIL_USER not set. Email verification disabled.");
     }
 
-    // Seed admin account
     try {
       const adminEmail = "gaugefitness@gmail.com";
       const adminPass = "98@David";
@@ -134,22 +79,20 @@ mongoose.connect(MONGO_URI)
           admin: true,
           password: hash,
         });
-        console.log("✓ Admin account created:", adminEmail);
+        console.log("Admin account created:", adminEmail);
       } else if (!admin.admin) {
         admin.admin = true;
         await admin.save();
-        console.log("✓ Existing user promoted to admin:", adminEmail);
+        console.log("Existing user promoted to admin:", adminEmail);
       } else {
-        console.log("✓ Admin account exists:", adminEmail);
+        console.log("Admin account exists:", adminEmail);
       }
-      // Demote any other admin users
       await User.updateMany({ email: { $ne: adminEmail }, admin: true }, { $set: { admin: false } });
-      console.log("✓ Only", adminEmail, "has admin access");
     } catch (err) {
       console.error("Admin seed error:", err.message);
     }
 
-    app.listen(PORT, () => console.log(`FUELGAUGE server running on http://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`FUELGAUGE server running on port ${PORT}`));
   })
   .catch(err => {
     console.error("MongoDB connection error:", err.message);
