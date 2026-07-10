@@ -39,6 +39,10 @@ body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba
 .auth-error{background:rgba(255,92,92,.12);border:1px solid var(--danger);color:var(--danger);font-size:13px;
   padding:10px 12px;border-radius:8px;margin-bottom:14px;}
 
+.auth-phone-frame{position:relative;z-index:1;width:100%;max-width:100%;background:transparent;border-radius:0;padding:0;box-shadow:none;}
+.auth-phone-frame::before{display:none;}
+.auth-phone-screen{background:transparent;border-radius:0;max-height:100vh;overflow-y:auto;}
+
 @media (max-width: 760px){
   .auth-shell{flex-direction:column;}
   .auth-hero{display:none;}
