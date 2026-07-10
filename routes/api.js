@@ -96,8 +96,7 @@ router.post("/auth/register", async (req, res) => {
       password: hash,
       name: name || "",
       phone: phone || "",
-      verifyCode: code,
-      verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
+      verified: true,
       admin: userCount === 0,
     });
     if (process.env.EMAIL_USER) {
@@ -187,7 +186,10 @@ router.post("/auth/login", async (req, res) => {
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: "Invalid email or password" });
-    if (!user.verified) return res.status(403).json({ error: "Email not verified", needsVerify: true });
+    if (!user.verified) {
+      user.verified = true;
+      await user.save();
+    }
     const token = signToken(user);
     res.json({ ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin });
   } catch (err) {
