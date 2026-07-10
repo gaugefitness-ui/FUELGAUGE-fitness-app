@@ -123,6 +123,34 @@ mongoose.connect(MONGO_URI)
       console.log("⚠ EMAIL_USER not set. Email verification disabled.");
     }
 
+    // Seed admin account
+    try {
+      const bcrypt = require("bcryptjs");
+      const { User } = require("./models");
+      const adminEmail = "gaugefitness@gmail.com";
+      const adminPass = "98@David";
+      let admin = await User.findOne({ email: adminEmail });
+      if (!admin) {
+        const hash = await bcrypt.hash(adminPass, 10);
+        admin = await User.create({
+          email: adminEmail,
+          password: hash,
+          name: "FUELGAUGE Admin",
+          verified: true,
+          admin: true,
+        });
+        console.log("✓ Admin account created:", adminEmail);
+      } else if (!admin.admin) {
+        admin.admin = true;
+        await admin.save();
+        console.log("✓ Existing user promoted to admin:", adminEmail);
+      } else {
+        console.log("✓ Admin account exists:", adminEmail);
+      }
+    } catch (err) {
+      console.error("Admin seed error:", err.message);
+    }
+
     app.listen(PORT, () => console.log(`FUELGAUGE server running on http://localhost:${PORT}`));
   })
   .catch(err => {
