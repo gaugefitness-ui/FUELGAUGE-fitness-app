@@ -86,15 +86,7 @@ app.use((req, res, next) => {
 });
 
 // --- Routes ---
-app.use("/api", (req, res, next) => {
-  try {
-    if (req.path.startsWith("/auth/")) return authLimiter(req, res, next);
-    if (req.path.startsWith("/payment/")) return paymentLimiter(req, res, next);
-    next();
-  } catch (e) {
-    next();
-  }
-}, apiRoutes);
+app.use("/api", apiRoutes);
 
 app.use(express.static(path.join(__dirname, "public")));
 
