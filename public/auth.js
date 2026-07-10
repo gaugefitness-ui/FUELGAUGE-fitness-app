@@ -96,10 +96,14 @@ function initAuthPage(mode) {
       if (!name || !email || !password) { showAuthError("Fill in all fields."); return; }
       if (password.length < 6) { showAuthError("Password must be at least 6 characters."); return; }
       try {
-        await authPost("/register", { name, email, password });
-        showToast("Verification code sent to " + email);
+        const regData = await authPost("/register", { name, email, password });
         const regCard = document.querySelector(".auth-card");
         showVerifyUI(regCard, email);
+        if (regData.emailWarning) {
+          showAuthError(regData.message);
+        } else {
+          showToast("Verification code sent to " + email);
+        }
       } catch (err) {
         showAuthError(err.message);
       }
@@ -155,8 +159,12 @@ function showVerifyUI(card, email) {
     e.preventDefault();
     hideAuthError();
     try {
-      await authPost("/resend", { email });
-      showToast("New code sent to " + email);
+      const resendData = await authPost("/resend", { email });
+      if (resendData.emailWarning) {
+        showAuthError(resendData.message);
+      } else {
+        showToast("New code sent to " + email);
+      }
     } catch (err) {
       showAuthError(err.message);
     }

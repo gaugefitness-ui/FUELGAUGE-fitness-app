@@ -276,10 +276,14 @@ function showRegister(){
     if(password.length < 6){ errEl.textContent="Password must be at least 6 characters"; errEl.classList.add("show"); return; }
     if(password !== password2){ errEl.textContent="Passwords don't match"; errEl.classList.add("show"); return; }
     try {
-      await api("/auth/register", { method:"POST", body:JSON.stringify({email,password,name}) });
+      const regData = await api("/auth/register", { method:"POST", body:JSON.stringify({email,password,name}) });
       verifyEmail = email;
       wrap.remove();
       showVerify(email);
+      if (regData.emailWarning) {
+        const errEl = document.getElementById("verify-error");
+        if (errEl) { errEl.textContent = regData.message; errEl.classList.add("show"); }
+      }
     } catch(e){
       const msg = e.error || (e.status===409 ? "Email already registered" : "Connection error");
       errEl.textContent=msg; errEl.classList.add("show");
@@ -366,8 +370,13 @@ function showVerify(email){
   };
   resendBtn.onclick = async ()=>{
     try {
-      await api("/auth/resend", { method:"POST", body:JSON.stringify({email}) });
-      toast("New code sent!");
+      const resendData = await api("/auth/resend", { method:"POST", body:JSON.stringify({email}) });
+      if (resendData.emailWarning) {
+        const errEl = document.getElementById("verify-error");
+        if (errEl) { errEl.textContent = resendData.message; errEl.classList.add("show"); }
+      } else {
+        toast("New code sent!");
+      }
       countdown = 30; timerEl.style.display=""; resendBtn.style.display="none";
       timerEl.textContent = "Resend in 30s";
       setInterval(()=>{ countdown--; if(countdown<=0){timerEl.style.display="none";resendBtn.style.display="inline";}else timerEl.textContent=`Resend in ${countdown}s`; }, 1000);

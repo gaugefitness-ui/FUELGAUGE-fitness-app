@@ -101,6 +101,7 @@ router.post("/auth/register", async (req, res) => {
       verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
       admin: userCount === 0,
     });
+    let emailSent = false;
     if (process.env.EMAIL_USER) {
       try {
         await transporter.sendMail({
@@ -114,6 +115,7 @@ router.post("/auth/register", async (req, res) => {
             <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
           </div>`,
         });
+        emailSent = true;
         console.log("Verification email sent to:", email);
       } catch (err) {
         console.error("Email send failed:", err.message);
@@ -124,7 +126,17 @@ router.post("/auth/register", async (req, res) => {
         if (waResult.skipped) console.log("SMS not configured. OTP:", code);
       }).catch(err => console.error("SMS OTP failed:", err.message));
     }
-    res.json({ ok: true, message: "Verification code sent", userId: user._id });
+    const response = { ok: true, userId: user._id };
+    if (emailSent) {
+      response.message = "Verification code sent to your email";
+    } else if (process.env.EMAIL_USER) {
+      response.message = "Account created but email could not be sent. Please use Resend code.";
+      response.emailWarning = true;
+    } else {
+      response.message = "Account created. Email verification is not configured.";
+      response.emailWarning = true;
+    }
+    res.json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -160,25 +172,38 @@ router.post("/auth/resend", async (req, res) => {
     user.verifyCode = code;
     user.verifyExpires = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
+    let emailSent = false;
     if (process.env.EMAIL_USER) {
-      transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "FUELGAUGE - Your verification code",
-        html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
-          <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
-          <p>Your new verification code is:</p>
-          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
-          <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
-        </div>`,
-      }).catch(err => console.error("Email resend failed:", err.message));
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "FUELGAUGE - Your verification code",
+          html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
+            <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
+            <p>Your new verification code is:</p>
+            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
+            <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
+          </div>`,
+        });
+        emailSent = true;
+      } catch (err) {
+        console.error("Email resend failed:", err.message);
+      }
     }
     if (user.phone) {
       sendSMSOTP(user.phone, code).then(waResult => {
         if (waResult.skipped) console.log("SMS not configured. OTP:", code);
       }).catch(err => console.error("SMS OTP resend failed:", err.message));
     }
-    res.json({ ok: true, message: "New code sent" });
+    const response = { ok: true };
+    if (emailSent) {
+      response.message = "New code sent to your email";
+    } else {
+      response.message = "Code regenerated but email could not be sent.";
+      response.emailWarning = true;
+    }
+    res.json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

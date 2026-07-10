@@ -12,3 +12,7 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false

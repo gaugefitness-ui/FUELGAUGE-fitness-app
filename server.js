@@ -101,8 +101,28 @@ app.use((err, req, res, next) => {
 
 // --- Start ---
 mongoose.connect(MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log("Connected to MongoDB");
+
+    // Verify email transporter at startup
+    if (process.env.EMAIL_USER) {
+      try {
+        const nodemailer = require("nodemailer");
+        const testTransporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+        });
+        await testTransporter.verify();
+        console.log("✓ Email transporter verified successfully");
+      } catch (err) {
+        console.error("✗ EMAIL TRANSPORTER FAILED:", err.message);
+        console.error("  Users will NOT receive verification emails!");
+        console.error("  Fix: Generate a new Gmail App Password at https://myaccount.google.com/apppasswords");
+      }
+    } else {
+      console.log("⚠ EMAIL_USER not set. Email verification disabled.");
+    }
+
     app.listen(PORT, () => console.log(`FUELGAUGE server running on http://localhost:${PORT}`));
   })
   .catch(err => {
