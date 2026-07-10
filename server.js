@@ -10,7 +10,7 @@ const paymentRoutes = require("./routes/payment");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:test@cluster0.hw3noe1.mongodb.net/fuelgauge?retryWrites=true&w=majority";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:%60test@cluster0.hw3noe1.mongodb.net/fuelgauge?retryWrites=true&w=majority";
 
 // --- Security Middleware ---
 
