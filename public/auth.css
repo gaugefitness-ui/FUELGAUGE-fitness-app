@@ -1,6 +1,7 @@
 /* ===== Auth pages (login / register) ===== */
-body.auth-body{margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba(13,15,20,0.65) 40%,rgba(13,15,20,0.85) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
-body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba(13,15,20,0.65) 40%,rgba(13,15,20,0.85) 100%),url('/register-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
+body.auth-body,body:has(.auth-root){margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
+body.auth-body.register-body,body:has(.auth-root) .register-body{background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/register-bg.jpg') center/cover no-repeat fixed;}
+.auth-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;display:flex;align-items:center;justify-content:center;}
 .auth-shell{min-height:100vh;display:flex;}
 .auth-hero{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:44px 40px;
   background:transparent;border-right:1px solid var(--line);position:relative;overflow:hidden;}
@@ -31,7 +32,7 @@ body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba
 .hero-pill.premium b{color:var(--amber);}
 
 .auth-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;max-width:520px;}
-.auth-card{width:100%;max-width:380px;}
+.auth-card{width:100%;max-width:380px;background:rgba(13,15,20,0.6);backdrop-filter:blur(16px);border-radius:20px;padding:28px;border:1px solid rgba(255,255,255,0.06);}
 .auth-card h2{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:24px;margin:0 0 4px;}
 .auth-card .smallnote{margin-bottom:20px;}
 .auth-switch{text-align:center;font-size:13px;color:var(--ink-dim);margin-top:16px;}
@@ -39,9 +40,9 @@ body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba
 .auth-error{background:rgba(255,92,92,.12);border:1px solid var(--danger);color:var(--danger);font-size:13px;
   padding:10px 12px;border-radius:8px;margin-bottom:14px;}
 
-.auth-phone-frame{position:relative;z-index:1;width:100%;max-width:100%;background:transparent;border-radius:0;padding:0;box-shadow:none;}
-.auth-phone-frame::before{display:none;}
-.auth-phone-screen{background:transparent;border-radius:0;max-height:100vh;overflow-y:auto;}
+.auth-phone-frame{position:relative;z-index:1;width:100%;max-width:100%;background:transparent!important;border-radius:0;padding:0;box-shadow:none;}
+.auth-phone-frame::before{display:none!important;}
+.auth-phone-screen{background:transparent!important;border-radius:0;max-height:100vh;overflow-y:auto;}
 
 @media (max-width: 760px){
   .auth-shell{flex-direction:column;}
