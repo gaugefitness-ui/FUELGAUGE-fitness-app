@@ -54,13 +54,7 @@
 <div class="toast" id="toast"></div>
 <script src="/app.js?v=8"></script>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js?v=8')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW registration failed:', err));
-  });
-}
+// Service worker disabled to prevent caching issues
 </script>
 </body>
 </html>
