@@ -11,6 +11,7 @@
 body.auth-body{margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
 body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/register-bg.jpg') center/cover no-repeat fixed;}
 .auth-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed!important;display:flex;align-items:center;justify-content:center;}
+.auth-screen.register-screen{background:linear-gradient(180deg,rgba(13,15,20,0.45) 0%,rgba(13,15,20,0.55) 40%,rgba(13,15,20,0.75) 100%),url('/register-bg.jpg') center/cover no-repeat fixed!important;}
 .auth-shell{min-height:100vh;display:flex;}
 .auth-hero{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:44px 40px;
   background:transparent;border-right:1px solid var(--line);position:relative;overflow:hidden;}

@@ -227,7 +227,7 @@ function showRegister(){
   if(existing) existing.remove();
   const wrap = document.createElement("div");
   wrap.id = "auth-root";
-  wrap.className = "auth-screen";
+  wrap.className = "auth-screen register-screen";
   wrap.innerHTML = `
     <div class="auth-phone-frame">
     <div class="auth-phone-screen">
