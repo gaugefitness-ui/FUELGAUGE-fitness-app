@@ -642,6 +642,8 @@ function setHero(view){
 async function boot(){
   const token = getToken();
   if(!token && !currentUser){ showLogin(); return; }
+  document.querySelector(".app").style.display = "flex";
+  document.querySelector(".bottomnav").style.display = "flex";
   try{
     const [profileRes, premRes, adminRes] = await Promise.all([api("/profile"), api("/premium/status"), api("/admin/check")]);
     profile = profileRes;
