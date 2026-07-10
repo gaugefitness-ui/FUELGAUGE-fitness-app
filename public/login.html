@@ -53,6 +53,9 @@
         <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Custom workout plans</div>
         <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Progress tracking</div>
       </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <a href="#" id="admin-login-toggle" style="color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Admin</a>
+      </div>
     </div>
   </div>
 
@@ -60,6 +63,14 @@
 <div class="toast" id="toast"></div>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="/auth.js"></script>
-<script>initAuthPage("login");</script>
+<script>
+initAuthPage("login");
+document.getElementById("admin-login-toggle")?.addEventListener("click", function(e) {
+  e.preventDefault();
+  document.getElementById("lg-email").value = "gaugefitness@gmail.com";
+  document.getElementById("lg-email").focus();
+  document.getElementById("lg-password").focus();
+});
+</script>
 </body>
 </html>

@@ -192,6 +192,9 @@ function showLogin(){
         <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Custom workout plans</div>
         <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Progress tracking</div>
       </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <a href="#" id="admin-login-toggle" style="color:rgba(255,255,255,0.3);font-size:11px;text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Admin</a>
+      </div>
     </div>
     </div>
     </div>`;
@@ -202,6 +205,11 @@ function showLogin(){
     inp.type = inp.type==="password" ? "text" : "password";
   };
   document.getElementById("goto-register").onclick = ()=>{ wrap.remove(); showRegister(); };
+  document.getElementById("admin-login-toggle")?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    document.getElementById("login-email").value = "gaugefitness@gmail.com";
+    document.getElementById("login-password").focus();
+  });
   renderGoogleButton("google-login-btn");
   document.getElementById("login-btn").onclick = async ()=>{
     const email = document.getElementById("login-email").value.trim();
