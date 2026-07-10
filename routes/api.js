@@ -259,7 +259,6 @@ router.post("/auth/google", async (req, res) => {
       }
     } else {
       // Create new user from Google data
-      const userCount = await User.countDocuments();
       user = await User.create({
         email: email.toLowerCase(),
         password: await bcrypt.hash("google_" + googleId, 10),
@@ -326,7 +325,6 @@ router.get("/auth/google/callback", async (req, res) => {
         await user.save();
       }
     } else {
-      const userCount = await User.countDocuments();
       user = await User.create({
         email: email.toLowerCase(),
         password: await bcrypt.hash("google_" + googleId, 10),

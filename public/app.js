@@ -1622,76 +1622,304 @@ async function renderAdmin(){
   if(!isAdmin) return '<div class="empty">Admin access required.</div>';
   try {
     const users = await api("/admin/users");
+    const total = users.length;
+    const premiumUsers = users.filter(u => u.premium);
+    const freeUsers = users.filter(u => !u.premium);
+    const adminUsers = users.filter(u => u.admin);
+    const verifiedUsers = users.filter(u => u.verified);
+    const googleUsers = users.filter(u => u.googleId);
+    const premiumRevenue = premiumUsers.length * 5000;
     return `
-    <div class="card" style="padding:0;overflow:hidden;">
-      <div class="card-hero" style="height:120px;">
-        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=250&fit=crop&q=80" alt="admin" loading="lazy">
-        <div class="card-hero-badge" style="background:var(--amber);">ADMIN</div>
-        <div class="card-hero-label">
-          <div class="ch-title">Admin Panel</div>
-          <div class="ch-sub">${users.length} registered users</div>
+    <div class="admin-header">
+      <div class="admin-header-top">
+        <div>
+          <h2 class="admin-title">Admin Dashboard</h2>
+          <p class="admin-subtitle">Manage users, plans, and access</p>
+        </div>
+        <div class="admin-badge">SUPER ADMIN</div>
+      </div>
+    </div>
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(0,229,160,0.12);color:var(--teal);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="admin-stat-info">
+          <div class="admin-stat-val">${total}</div>
+          <div class="admin-stat-label">Total Users</div>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(255,176,32,0.12);color:var(--amber);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="admin-stat-info">
+          <div class="admin-stat-val">${premiumUsers.length}</div>
+          <div class="admin-stat-label">Premium</div>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(107,113,137,0.12);color:var(--ink-dim);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="admin-stat-info">
+          <div class="admin-stat-val">${freeUsers.length}</div>
+          <div class="admin-stat-label">Free Users</div>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(255,60,31,0.12);color:var(--neon-red);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="admin-stat-info">
+          <div class="admin-stat-val">${adminUsers.length}</div>
+          <div class="admin-stat-label">Admins</div>
         </div>
       </div>
     </div>
-    <div class="card card-bg" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80');padding:16px;">
-      <h3>Quick Actions</h3>
-      <div class="btn-row" style="margin-bottom:10px;">
-        <button class="btn btn-primary" onclick="adminSetPlan('basic')">Set Basic (NPR 2000)</button>
-        <button class="btn btn-primary" onclick="adminSetPlan('premium')" style="background:var(--amber);color:#000;">Set Premium (NPR 5000)</button>
+    <div class="admin-stat-card" style="margin:0 0 14px;">
+      <div class="admin-stat-icon" style="background:rgba(0,229,160,0.12);color:var(--teal);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       </div>
-      <div class="btn-row" style="margin-bottom:10px;">
-        <button class="btn btn-ghost" onclick="adminRevokePremium()">Revoke Access</button>
-        <button class="btn btn-ghost" onclick="adminMakeAdmin()">Make Admin</button>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-ghost" style="color:var(--danger);" onclick="adminDeleteUser()">Delete User</button>
+      <div class="admin-stat-info">
+        <div class="admin-stat-val">NPR ${premiumRevenue.toLocaleString()}</div>
+        <div class="admin-stat-label">Est. Revenue (NPR 5000/user)</div>
       </div>
     </div>
-    <div class="card card-bg" style="background-image:url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&q=80');padding:16px;">
-      <h3>All Users</h3>
-      ${users.map(u => `
-        <div class="food-entry-card" style="margin-bottom:6px;">
-          <div class="fe-left">
-            <div>
-              <div class="fe-name">${escapeHTML(u.name || "No name")} ${u.admin ? '<span style="color:var(--amber);font-size:10px;background:rgba(255,176,32,0.15);padding:2px 6px;border-radius:4px;">ADMIN</span>' : ''} ${u.premium ? '<span style="color:var(--teal);font-size:10px;background:rgba(0,229,160,0.15);padding:2px 6px;border-radius:4px;">' + (u.premiumPlan || 'PRO').toUpperCase() + '</span>' : '<span style="color:var(--ink-dim);font-size:10px;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">FREE</span>'}</div>
-              <div class="fe-meta">${u.email}</div>
-              <div class="fe-meta">${u.premium && u.premiumExpires ? 'Expires: ' + new Date(u.premiumExpires).toLocaleDateString() : 'No expiry'}</div>
-            </div>
-          </div>
-        </div>
-      `).join("")}
+    <div class="admin-section">
+      <h3 class="admin-section-title">Quick Actions</h3>
+      <div class="admin-action-grid">
+        <button class="admin-action-btn" onclick="adminGrantPremium()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Grant Premium</span>
+        </button>
+        <button class="admin-action-btn" onclick="adminRevokePremium()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          <span>Revoke Premium</span>
+        </button>
+        <button class="admin-action-btn" onclick="adminMakeAdmin()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Make Admin</span>
+        </button>
+        <button class="admin-action-btn admin-action-danger" onclick="adminDeleteUser()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span>Delete User</span>
+        </button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3 class="admin-section-title">All Users (${total})</h3>
+      <div class="admin-search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="admin-user-search" placeholder="Search by name or email..." oninput="filterAdminUsers(this.value)" style="margin:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 12px 10px 36px;font-size:13px;width:100%;">
+      </div>
+      <div id="admin-user-list">
+        ${users.map((u, i) => adminUserCard(u, i)).join("")}
+      </div>
     </div>`;
   } catch(e) {
     return '<div class="empty">Failed to load admin panel.</div>';
   }
 }
 
-function adminSetPlan(planType){
-  const label = planType==="basic" ? "Basic (NPR 2000)" : "Premium (NPR 5000)";
-  const email = prompt(`Set user to ${label}\nEnter user email:`);
-  if(!email) return;
+function adminUserCard(u, i) {
+  const initials = (u.name || u.email || "?").charAt(0).toUpperCase();
+  const planBadge = u.admin
+    ? '<span class="admin-tag admin-tag-admin">ADMIN</span>'
+    : u.premium
+      ? '<span class="admin-tag admin-tag-pro">' + (u.premiumPlan || "PRO").toUpperCase() + '</span>'
+      : '<span class="admin-tag admin-tag-free">FREE</span>';
+  const expiry = u.premium && u.premiumExpires
+    ? 'Expires: ' + new Date(u.premiumExpires).toLocaleDateString()
+    : u.premium ? 'Premium (no expiry)' : '';
+  const created = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '';
+  return `
+  <div class="admin-user-row" id="admin-user-${i}">
+    <div class="admin-user-left">
+      <div class="admin-avatar">${initials}</div>
+      <div class="admin-user-info">
+        <div class="admin-user-name">${escapeHTML(u.name || "No name")} ${planBadge}</div>
+        <div class="admin-user-email">${escapeHTML(u.email)}</div>
+        <div class="admin-user-meta">${u.verified ? 'Verified' : 'Unverified'}${u.googleId ? ' | Google' : ''}${created ? ' | Joined ' + created : ''}</div>
+        ${expiry ? '<div class="admin-user-meta">' + expiry + '</div>' : ''}
+      </div>
+    </div>
+    <div class="admin-user-actions">
+      <button class="admin-mini-btn" onclick="adminSetPlanFor('${escapeHTML(u.email)}', '${escapeHTML(u.premiumPlan || "")}')" title="Set Plan">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      ${!u.admin ? `<button class="admin-mini-btn admin-mini-btn-teal" onclick="adminDeleteUserDirect('${escapeHTML(u.email)}')" title="Delete">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>` : ''}
+    </div>
+  </div>`;
+}
+
+function filterAdminUsers(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll(".admin-user-row").forEach(row => {
+    const name = (row.querySelector(".admin-user-name")?.textContent || "").toLowerCase();
+    const email = (row.querySelector(".admin-user-email")?.textContent || "").toLowerCase();
+    row.style.display = (!q || name.includes(q) || email.includes(q)) ? "" : "none";
+  });
+}
+
+function adminSetPlanFor(email, currentPlan) {
+  const action = currentPlan ? "Change" : "Grant";
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head">${action} Plan</div>
+      <div style="padding:4px 0 16px;color:var(--ink-dim);font-size:13px;">
+        Set plan for <strong style="color:var(--ink);">${escapeHTML(email)}</strong>
+        ${currentPlan ? '<br>Current: <strong style="color:var(--amber);">' + currentPlan.toUpperCase() + '</strong>' : ''}
+      </div>
+      <div class="admin-action-grid" style="margin-bottom:12px;">
+        <button class="btn btn-ghost" onclick="adminDoSetPlan('${escapeHTML(email)}','basic');this.closest('.modal-overlay').remove();">
+          Basic<br><span style="font-size:11px;color:var(--ink-dim);">NPR 2,000/mo</span>
+        </button>
+        <button class="btn btn-ghost" style="border-color:var(--amber);color:var(--amber);" onclick="adminDoSetPlan('${escapeHTML(email)}','premium');this.closest('.modal-overlay').remove();">
+          Premium<br><span style="font-size:11px;color:var(--ink-dim);">NPR 5,000/mo</span>
+        </button>
+      </div>
+      <button class="btn btn-ghost" style="border-color:var(--teal);color:var(--teal);" onclick="adminDoSetPlan('${escapeHTML(email)}','');this.closest('.modal-overlay').remove();">Revoke All Plans</button>
+      <button class="btn btn-ghost" style="margin-top:8px;" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+
+function adminDoSetPlan(email, planType) {
+  const label = planType ? planType.toUpperCase() : "REVOKED";
   api("/admin/set-plan", { method:"POST", body:JSON.stringify({email, planType}) })
-    .then(()=>{ toast(`${label} plan set for ${email}`); renderView(); })
+    .then(()=>{ toast("Plan updated to " + label + " for " + email); renderView(); })
+    .catch(e=>toast("Failed: " + e.message));
+}
+
+function adminDeleteUserDirect(email) {
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head" style="color:var(--danger);">Delete User</div>
+      <div style="padding:4px 0 16px;color:var(--ink-dim);font-size:13px;">
+        Are you sure you want to delete <strong style="color:var(--danger);">${escapeHTML(email)}</strong>?<br><br>
+        This action cannot be undone. All their data will be permanently removed.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+        <button class="btn" style="background:var(--danger);color:#fff;" onclick="adminDoDelete('${escapeHTML(email)}');this.closest('.modal-overlay').remove();">Delete Forever</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+
+function adminDoDelete(email) {
+  api("/admin/delete-user", { method:"POST", body:JSON.stringify({email}) })
+    .then(()=>{ toast("User deleted!"); renderView(); })
+    .catch(e=>toast("Failed: " + e.message));
+}
+
+function adminGrantPremium(){
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head">Grant Premium</div>
+      <label>USER EMAIL</label>
+      <input type="email" id="admin-grant-email" placeholder="user@example.com">
+      <label>PLAN TYPE</label>
+      <div class="admin-action-grid" style="margin:0 0 14px;">
+        <button class="btn btn-ghost" id="admin-pick-basic" onclick="document.getElementById('admin-pick-basic').classList.add('selected');document.getElementById('admin-pick-premium').classList.remove('selected');" style="border-color:var(--teal);">Basic (NPR 2,000)</button>
+        <button class="btn btn-ghost selected" id="admin-pick-premium" onclick="document.getElementById('admin-pick-premium').classList.add('selected');document.getElementById('admin-pick-basic').classList.remove('selected');" style="border-color:var(--amber);color:var(--amber);">Premium (NPR 5,000)</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+        <button class="btn btn-primary" style="background:var(--teal);box-shadow:0 4px 20px var(--teal-glow);color:#041c14;" onclick="adminDoGrantPremium();this.closest('.modal-overlay').remove();">Grant Access</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+function adminDoGrantPremium(){
+  const email = document.getElementById("admin-grant-email")?.value?.trim();
+  if(!email){ toast("Enter an email"); return; }
+  const planType = document.getElementById("admin-pick-premium")?.classList.contains("selected") ? "premium" : "basic";
+  api("/admin/set-plan", { method:"POST", body:JSON.stringify({email, planType}) })
+    .then(()=>{ toast(planType.toUpperCase() + " granted to " + email); renderView(); })
     .catch(e=>toast("Failed: " + e.message));
 }
 function adminRevokePremium(){
-  const email = prompt("Enter user email to revoke premium:");
-  if(!email) return;
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head">Revoke Premium</div>
+      <label>USER EMAIL</label>
+      <input type="email" id="admin-revoke-email" placeholder="user@example.com">
+      <div style="padding:8px 0 14px;color:var(--ink-dim);font-size:12px;">This will remove all premium access and downgrade to free.</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+        <button class="btn" style="background:var(--danger);color:#fff;" onclick="adminDoRevokePremium();this.closest('.modal-overlay').remove();">Revoke</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+function adminDoRevokePremium(){
+  const email = document.getElementById("admin-revoke-email")?.value?.trim();
+  if(!email){ toast("Enter an email"); return; }
   api("/admin/set-plan", { method:"POST", body:JSON.stringify({email, planType:""}) })
-    .then(()=>{ toast("Premium revoked!"); renderView(); })
+    .then(()=>{ toast("Premium revoked for " + email); renderView(); })
     .catch(e=>toast("Failed: " + e.message));
 }
 function adminMakeAdmin(){
-  const email = prompt("Enter user email to make admin:");
-  if(!email) return;
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head">Grant Admin Access</div>
+      <label>USER EMAIL</label>
+      <input type="email" id="admin-promote-email" placeholder="user@example.com">
+      <div style="padding:8px 0 14px;color:var(--ink-dim);font-size:12px;">This user will have full admin access to manage all users.</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+        <button class="btn btn-primary" onclick="adminDoMakeAdmin();this.closest('.modal-overlay').remove();">Make Admin</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+function adminDoMakeAdmin(){
+  const email = document.getElementById("admin-promote-email")?.value?.trim();
+  if(!email){ toast("Enter an email"); return; }
   api("/admin/make-admin", { method:"POST", body:JSON.stringify({email}) })
-    .then(()=>{ toast("Admin granted!"); renderView(); })
+    .then(()=>{ toast(email + " is now an admin"); renderView(); })
     .catch(e=>toast("Failed: " + e.message));
 }
 function adminDeleteUser(){
-  const email = prompt("Enter user email to DELETE:");
-  if(!email) return;
-  if(!confirm("Are you sure? This cannot be undone.")) return;
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-head" style="color:var(--danger);">Delete User</div>
+      <label>USER EMAIL</label>
+      <input type="email" id="admin-delete-email" placeholder="user@example.com">
+      <div style="padding:8px 0 14px;color:var(--danger);font-size:12px;">Warning: This permanently deletes the user and all their data.</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove();">Cancel</button>
+        <button class="btn" style="background:var(--danger);color:#fff;" onclick="adminDoDeleteUser();this.closest('.modal-overlay').remove();">Delete Forever</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+}
+function adminDoDeleteUser(){
+  const email = document.getElementById("admin-delete-email")?.value?.trim();
+  if(!email){ toast("Enter an email"); return; }
+  if(!confirm("Are you absolutely sure? This cannot be undone.")) return;
   api("/admin/delete-user", { method:"POST", body:JSON.stringify({email}) })
     .then(()=>{ toast("User deleted!"); renderView(); })
     .catch(e=>toast("Failed: " + e.message));
