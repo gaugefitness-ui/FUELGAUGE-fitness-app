@@ -86,6 +86,9 @@ app.use((req, res, next) => {
 });
 
 // --- Routes ---
+app.get("/api/_debug", (req, res) => {
+  res.json({ ok: true, env: { hasMongo: !!process.env.MONGO_URI, hasEmail: !!process.env.EMAIL_USER, hasJwt: !!process.env.JWT_SECRET, hasGoogle: !!process.env.GOOGLE_CLIENT_ID } });
+});
 app.use("/api", apiRoutes);
 
 app.use(express.static(path.join(__dirname, "public")));
