@@ -10,7 +10,7 @@ const paymentRoutes = require("./routes/payment");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/fuelgauge";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:pWFoft1Efp3xrB6J@cluster0.zbq3j9i.mongodb.net/fuelgauge?retryWrites=true&w=majority";
 
 // --- Security Middleware ---
 
