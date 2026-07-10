@@ -14,9 +14,6 @@
 <div class="auth-shell">
 
   <div class="auth-hero">
-    <div class="auth-hero-top">
-      <div class="brand"><span class="dot"></span>FUELGAUGE</div>
-    </div>
     <div class="auth-hero-mid">
       <div class="auth-hero-icons">
         <div class="auth-hero-icon icon-fire"><svg viewBox="0 0 48 48" fill="none"><path d="M24 4C24 4 10 20 10 30a14 14 0 0028 0C38 20 24 4 24 4z" fill="var(--neon-red)" opacity="0.15" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 24c0 0-5 6-5 10a5 5 0 0010 0c0-4-5-10-5-10z" fill="var(--amber)" opacity="0.4" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/></svg></div>
@@ -24,7 +21,7 @@
         <div class="auth-hero-icon icon-dumbbell"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="36" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="12" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="32" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><line x1="16" y1="24" x2="32" y2="24" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round"/></svg></div>
       </div>
       <h1 class="quote-heading">"Your only limit is <span style="color:var(--teal);">you</span>."</h1>
-      <p>One account. Diet tracking, workout plans, and progress — choose Basic or go Premium for full physical exercise access.</p>
+      <p>One account. Diet tracking, workout plans, and progress — choose Basic or go Premium.</p>
     </div>
     <div class="auth-hero-bottom">
       <div class="auth-quote-strip">
@@ -39,17 +36,24 @@
 
   <div class="auth-panel">
     <div class="auth-card">
-      <h2>Create your account</h2>
-      <p class="smallnote">Starts on Basic — upgrade to Premium any time.</p>
+      <div class="auth-logo"><span class="dot"></span><span>FUELGAUGE</span></div>
+      <h2>Create account</h2>
+      <p class="smallnote">Start your transformation today</p>
       <div id="auth-error" class="auth-error" style="display:none;"></div>
       <label>Full name</label>
       <input id="rg-name" type="text" placeholder="Your name" autocomplete="name">
-      <label>Email</label>
+      <label>Email address</label>
       <input id="rg-email" type="email" placeholder="you@example.com" autocomplete="username">
       <label>Password</label>
-      <input id="rg-password" type="password" placeholder="At least 6 characters" autocomplete="new-password">
-      <button class="btn btn-primary" id="rg-submit" style="margin-top:6px;">Create account</button>
-      <p class="auth-switch">Already have an account? <a href="/login.html">Log in</a></p>
+      <input id="rg-password" type="password" placeholder="Min 6 characters" autocomplete="new-password">
+      <button class="btn btn-primary" id="rg-submit">Create Account</button>
+      <div class="auth-divider"><span>or</span></div>
+      <p class="auth-switch">Already have an account? <a href="/login.html">Sign in</a></p>
+      <div class="auth-features">
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Track calories & macros</div>
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Custom workout plans</div>
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Progress tracking</div>
+      </div>
     </div>
   </div>
 

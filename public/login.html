@@ -14,9 +14,6 @@
 <div class="auth-shell">
 
   <div class="auth-hero">
-    <div class="auth-hero-top">
-      <div class="brand"><span class="dot"></span>FUELGAUGE</div>
-    </div>
     <div class="auth-hero-mid">
       <div class="auth-hero-icons">
         <div class="auth-hero-icon icon-fire"><svg viewBox="0 0 48 48" fill="none"><path d="M24 4C24 4 10 20 10 30a14 14 0 0028 0C38 20 24 4 24 4z" fill="var(--neon-red)" opacity="0.15" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 24c0 0-5 6-5 10a5 5 0 0010 0c0-4-5-10-5-10z" fill="var(--amber)" opacity="0.4" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/></svg></div>
@@ -39,15 +36,22 @@
 
   <div class="auth-panel">
     <div class="auth-card">
+      <div class="auth-logo"><span class="dot"></span><span>FUELGAUGE</span></div>
       <h2>Welcome back</h2>
-      <p class="smallnote">Log in to your engine.</p>
+      <p class="smallnote">Sign in to continue your fitness journey</p>
       <div id="auth-error" class="auth-error" style="display:none;"></div>
-      <label>Email</label>
+      <label>Email address</label>
       <input id="lg-email" type="email" placeholder="you@example.com" autocomplete="username">
       <label>Password</label>
-      <input id="lg-password" type="password" placeholder="••••••••" autocomplete="current-password">
-      <button class="btn btn-primary" id="lg-submit" style="margin-top:6px;">Log in</button>
-      <p class="auth-switch">New here? <a href="/register.html">Create an account</a></p>
+      <input id="lg-password" type="password" placeholder="Enter your password" autocomplete="current-password">
+      <button class="btn btn-primary" id="lg-submit">Sign In</button>
+      <div class="auth-divider"><span>or</span></div>
+      <p class="auth-switch">Don't have an account? <a href="/register.html">Create one</a></p>
+      <div class="auth-features">
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Track calories & macros</div>
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Custom workout plans</div>
+        <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Progress tracking</div>
+      </div>
     </div>
   </div>
 
