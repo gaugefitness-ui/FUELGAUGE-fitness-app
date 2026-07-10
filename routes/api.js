@@ -7,7 +7,7 @@ const foods = require("../data/foods");
 const { User, Profile, FoodLogEntry, WeightEntry, WorkoutCompletion, WorkoutPlan, WaterLog, Measurement, WorkoutLog, PersonalRecord } = require("../models");
 const { signToken, requireAuth, requirePremium } = require("../middleware/auth");
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "", process.env.GOOGLE_CLIENT_SECRET || "");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
