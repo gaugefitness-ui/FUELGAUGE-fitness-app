@@ -627,6 +627,8 @@ router.post("/premium/activate", requireAuth, async (req, res) => {
     user.premium = true;
     user.premiumPlan = planType;
     user.premiumExpires = new Date(startFrom.getTime() + plan.days * 24 * 60 * 60 * 1000);
+    user.plan = planType;
+    user.planExpiresAt = user.premiumExpires;
     await user.save();
     res.json({ ok: true, premium: true, plan: planType, expires: user.premiumExpires });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -712,6 +714,8 @@ router.post("/admin/grant-premium", requireAuth, async (req, res) => {
     target.premium = true;
     target.premiumPlan = planType;
     target.premiumExpires = new Date(startFrom.getTime() + plan.days * 24 * 60 * 60 * 1000);
+    target.plan = planType;
+    target.planExpiresAt = target.premiumExpires;
     await target.save();
     res.json({ ok: true, message: `Premium (${planType}) granted to ${email}` });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -728,10 +732,14 @@ router.post("/admin/set-plan", requireAuth, async (req, res) => {
       user.premium = true;
       user.premiumPlan = planType;
       user.premiumExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      user.plan = planType;
+      user.planExpiresAt = user.premiumExpires;
     } else {
       user.premium = false;
       user.premiumPlan = "";
       user.premiumExpires = null;
+      user.plan = "basic";
+      user.planExpiresAt = null;
     }
     await user.save();
     res.json({ ok: true, plan: user.premiumPlan });
@@ -748,6 +756,8 @@ router.post("/admin/revoke-premium", requireAuth, async (req, res) => {
     target.premium = false;
     target.premiumPlan = "";
     target.premiumExpires = null;
+    target.plan = "basic";
+    target.planExpiresAt = null;
     await target.save();
     res.json({ ok: true, message: `Premium revoked from ${email}` });
   } catch (err) { res.status(500).json({ error: err.message }); }

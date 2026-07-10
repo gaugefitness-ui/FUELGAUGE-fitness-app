@@ -14,6 +14,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:%60test@cluster0.hw3noe1.mongodb.net/fuelgauge?retryWrites=true&w=majority";
 
+app.set("trust proxy", 1);
+
 // --- Security Middleware ---
 
 // Helmet: sets various HTTP security headers
