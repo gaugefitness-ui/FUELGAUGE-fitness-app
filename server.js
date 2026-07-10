@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
 const rateLimit = require("express-rate-limit");
 const apiRoutes = require("./routes/api");
 const paymentRoutes = require("./routes/payment");
+const { User } = require("./models");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -125,8 +127,6 @@ mongoose.connect(MONGO_URI)
 
     // Seed admin account
     try {
-      const bcrypt = require("bcryptjs");
-      const { User } = require("./models");
       const adminEmail = "gaugefitness@gmail.com";
       const adminPass = "98@David";
       let admin = await User.findOne({ email: adminEmail });
@@ -134,10 +134,10 @@ mongoose.connect(MONGO_URI)
         const hash = await bcrypt.hash(adminPass, 10);
         admin = await User.create({
           email: adminEmail,
-          password: hash,
           name: "FUELGAUGE Admin",
           verified: true,
           admin: true,
+          password: hash,
         });
         console.log("✓ Admin account created:", adminEmail);
       } else if (!admin.admin) {
@@ -147,6 +147,9 @@ mongoose.connect(MONGO_URI)
       } else {
         console.log("✓ Admin account exists:", adminEmail);
       }
+      // Demote any other admin users
+      await User.updateMany({ email: { $ne: adminEmail }, admin: true }, { $set: { admin: false } });
+      console.log("✓ Only", adminEmail, "has admin access");
     } catch (err) {
       console.error("Admin seed error:", err.message);
     }
