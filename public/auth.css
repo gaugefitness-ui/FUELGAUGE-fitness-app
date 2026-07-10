@@ -1,9 +1,9 @@
 /* ===== Auth pages (login / register) ===== */
-body.auth-body{margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(13,15,20,0.88) 0%,rgba(13,15,20,0.92) 40%,rgba(13,15,20,0.97) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
-body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.88) 0%,rgba(13,15,20,0.92) 40%,rgba(13,15,20,0.97) 100%),url('/register-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
+body.auth-body{margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba(13,15,20,0.65) 40%,rgba(13,15,20,0.85) 100%),url('/gym-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
+body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.55) 0%,rgba(13,15,20,0.65) 40%,rgba(13,15,20,0.85) 100%),url('/register-bg.jpg') center/cover no-repeat fixed;background-color:var(--asphalt);}
 .auth-shell{min-height:100vh;display:flex;}
 .auth-hero{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:44px 40px;
-  background:linear-gradient(165deg,#1c1f26 0%,#14161b 70%);border-right:1px solid var(--line);position:relative;overflow:hidden;}
+  background:transparent;border-right:1px solid var(--line);position:relative;overflow:hidden;}
 .auth-hero::after{content:"";position:absolute;right:-120px;top:-120px;width:340px;height:340px;border-radius:50%;
   background:radial-gradient(circle,rgba(25,194,160,.16) 0%,transparent 70%);}
 .auth-hero-mid{position:relative;}
@@ -25,7 +25,7 @@ body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.88) 0%,rgba
 .quote-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink-dim);
   background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:20px;padding:5px 12px;}
 .auth-hero-bottom{display:flex;flex-direction:column;gap:10px;position:relative;}
-.hero-pill{background:var(--panel-raised);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--ink-dim);font-family:'JetBrains Mono',monospace;}
+.hero-pill{background:rgba(21,24,33,0.7);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--ink-dim);font-family:'JetBrains Mono',monospace;}
 .hero-pill b{color:var(--ink);font-family:'Inter',sans-serif;margin-right:6px;}
 .hero-pill.premium{border-color:var(--amber);}
 .hero-pill.premium b{color:var(--amber);}
@@ -41,10 +41,10 @@ body.register-body{background:linear-gradient(180deg,rgba(13,15,20,0.88) 0%,rgba
 
 @media (max-width: 760px){
   .auth-shell{flex-direction:column;}
-  .auth-hero{border-right:none;border-bottom:1px solid var(--line);padding:32px 24px;}
-  .auth-hero-mid h1{font-size:28px;}
-  .hero-gauge{width:150px;height:90px;}
-  .auth-panel{padding:32px 20px;}
+  .auth-hero{display:none;}
+  .auth-panel{padding:60px 24px 40px;width:100%;min-height:100vh;}
+  .auth-card{max-width:100%;}
+  .auth-card h2{font-size:28px;}
 }
 
 /* ===== Plan badge in topbar ===== */

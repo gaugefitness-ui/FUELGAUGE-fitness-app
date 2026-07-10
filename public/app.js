@@ -166,11 +166,6 @@ function showLogin(){
     <div class="auth-phone-screen">
     <div class="auth-card">
       <div class="auth-logo"><span class="dot"></span><span>FUELGAUGE</span></div>
-      <div class="auth-hero-icons">
-        <div class="auth-hero-icon icon-fire"><svg viewBox="0 0 48 48" fill="none"><path d="M24 4C24 4 10 20 10 30a14 14 0 0028 0C38 20 24 4 24 4z" fill="var(--neon-red)" opacity="0.15" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 24c0 0-5 6-5 10a5 5 0 0010 0c0-4-5-10-5-10z" fill="var(--amber)" opacity="0.4" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <div class="auth-hero-icon icon-heart"><svg viewBox="0 0 48 48" fill="none"><path d="M24 42s-16-10.4-16-22A9 9 0 0124 12a9 9 0 0116 8c0 11.6-16 22-16 22z" fill="var(--neon-red)" opacity="0.12" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 24l4 4 8-8" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="auth-hero-icon icon-dumbbell"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="36" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="12" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="32" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><line x1="16" y1="24" x2="32" y2="24" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      </div>
       <h2 class="quote-heading">"The body achieves what the <span style="color:var(--neon-red);">mind</span> believes."</h2>
       <p class="auth-sub">Sign in to continue your fitness journey</p>
       <div class="auth-error" id="login-error"></div>
@@ -238,11 +233,6 @@ function showRegister(){
     <div class="auth-phone-screen">
     <div class="auth-card">
       <div class="auth-logo"><span class="dot"></span><span>FUELGAUGE</span></div>
-      <div class="auth-hero-icons">
-        <div class="auth-hero-icon icon-fire"><svg viewBox="0 0 48 48" fill="none"><path d="M24 4C24 4 10 20 10 30a14 14 0 0028 0C38 20 24 4 24 4z" fill="var(--neon-red)" opacity="0.15" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 24c0 0-5 6-5 10a5 5 0 0010 0c0-4-5-10-5-10z" fill="var(--amber)" opacity="0.4" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <div class="auth-hero-icon icon-heart"><svg viewBox="0 0 48 48" fill="none"><path d="M24 42s-16-10.4-16-22A9 9 0 0124 12a9 9 0 0116 8c0 11.6-16 22-16 22z" fill="var(--neon-red)" opacity="0.12" stroke="var(--neon-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 24l4 4 8-8" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="auth-hero-icon icon-dumbbell"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="36" y="18" width="6" height="12" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="12" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><rect x="32" y="15" width="4" height="18" rx="2" stroke="var(--amber)" stroke-width="2.5"/><line x1="16" y1="24" x2="32" y2="24" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      </div>
       <h2 class="quote-heading">"Your only limit is <span style="color:var(--teal);">you</span>."</h2>
       <p class="auth-sub">Start your transformation today</p>
       <div class="auth-error" id="reg-error"></div>
