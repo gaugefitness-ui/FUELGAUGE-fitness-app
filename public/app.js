@@ -1,5 +1,5 @@
 const IS_CAPACITOR = window.location.protocol === "capacitor:" || window.location.protocol === "https:" && window.location.hostname === "localhost";
-const API_BASE = IS_CAPACITOR ? (document.querySelector('meta[name="api-server"]')?.content || "http://192.168.1.2:3000") : "";
+const API_BASE = IS_CAPACITOR ? (document.querySelector('meta[name="api-server"]')?.content || "https://fuelgauge-zhjo.onrender.com") : "";
 const API = API_BASE + "/api";
 
 // Handle deep link callback from Google auth (Capacitor)

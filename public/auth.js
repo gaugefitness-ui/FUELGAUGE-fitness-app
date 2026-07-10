@@ -1,5 +1,5 @@
 const IS_CAPACITOR_AUTH = window.location.protocol === "capacitor:" || (window.location.protocol === "https:" && window.location.hostname === "localhost");
-const AUTH_BASE = IS_CAPACITOR_AUTH ? (document.querySelector('meta[name="api-server"]')?.content || "http://192.168.1.2:3000") : "";
+const AUTH_BASE = IS_CAPACITOR_AUTH ? (document.querySelector('meta[name="api-server"]')?.content || "https://fuelgauge-zhjo.onrender.com") : "";
 const AUTH_API = AUTH_BASE + "/api/auth";
 
 function showAuthError(msg) {
