@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FUELGAUGE</string>
+    <string name="title_activity_main">FUELGAUGE</string>
+    <string name="package_name">com.fuelgauge.app</string>
+    <string name="custom_url_scheme">com.fuelgauge.app</string>
+    <string name="server_client_id">449230108797-tks2lkji381a7qbf2qk66vmn72nk4st4.apps.googleusercontent.com</string>
+</resources>

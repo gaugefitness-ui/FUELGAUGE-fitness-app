@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="api-server" content="http://192.168.1.2:3000">
+<title>Log in — FUELGAUGE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/auth.css">
+</head>
+<body class="auth-body">
+<div class="auth-shell">
+
+  <div class="auth-hero">
+    <div class="auth-hero-top">
+      <div class="brand"><span class="dot"></span>FUELGAUGE</div>
+    </div>
+    <div class="auth-hero-mid">
+      <svg class="hero-gauge" viewBox="0 0 220 130" width="200" height="118">
+        <path d="M 15 115 A 95 95 0 0 1 205 115" fill="none" stroke="#30343c" stroke-width="14" stroke-linecap="round"/>
+        <path d="M 15 115 A 95 95 0 0 1 205 115" fill="none" stroke="var(--teal)" stroke-width="14" stroke-linecap="round" stroke-dasharray="220 298"/>
+        <g transform="rotate(45 110 115)">
+          <line x1="110" y1="115" x2="110" y2="35" stroke="var(--cluster)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="110" cy="115" r="7" fill="var(--cluster)"/>
+        </g>
+      </svg>
+      <h1>Run on full.</h1>
+      <p>Track diet, training and progress in one gauge. Log back in to pick up where you left off.</p>
+    </div>
+    <div class="auth-hero-bottom">
+      <div class="hero-pill"><b>Basic</b> Diet + Workout — Rs 2,000</div>
+      <div class="hero-pill premium"><b>Premium</b> Diet + Workout + Physical Exercise — Rs 4,000</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <h2>Welcome back</h2>
+      <p class="smallnote">Log in to your engine.</p>
+      <div id="auth-error" class="auth-error" style="display:none;"></div>
+      <label>Email</label>
+      <input id="lg-email" type="email" placeholder="you@example.com" autocomplete="username">
+      <label>Password</label>
+      <input id="lg-password" type="password" placeholder="••••••••" autocomplete="current-password">
+      <button class="btn btn-primary" id="lg-submit" style="margin-top:6px;">Log in</button>
+      <p class="auth-switch">New here? <a href="/register.html">Create an account</a></p>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script src="/auth.js"></script>
+<script>initAuthPage("login");</script>
+</body>
+</html>
