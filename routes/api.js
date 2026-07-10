@@ -96,21 +96,28 @@ router.post("/auth/register", async (req, res) => {
       password: hash,
       name: name || "",
       phone: phone || "",
-      verified: true,
+      verified: false,
+      verifyCode: code,
+      verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
       admin: userCount === 0,
     });
     if (process.env.EMAIL_USER) {
-      transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "FUELGAUGE - Verify your email",
-        html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
-          <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
-          <p>Your verification code is:</p>
-          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
-          <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
-        </div>`,
-      }).catch(err => console.error("Email send failed:", err.message));
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "FUELGAUGE - Verify your email",
+          html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
+            <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
+            <p>Your verification code is:</p>
+            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
+            <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
+          </div>`,
+        });
+        console.log("Verification email sent to:", email);
+      } catch (err) {
+        console.error("Email send failed:", err.message);
+      }
     }
     if (phone) {
       sendSMSOTP(phone, code).then(waResult => {
@@ -187,10 +194,7 @@ router.post("/auth/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: "Invalid email or password" });
     if (!user.verified) {
-      user.verified = true;
-      user.verifyCode = undefined;
-      user.verifyExpires = undefined;
-      await user.save();
+      return res.status(403).json({ error: "Email not verified. Please check your inbox for the verification code.", needsVerification: true });
     }
     const token = signToken(user);
     res.json({ ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin });
