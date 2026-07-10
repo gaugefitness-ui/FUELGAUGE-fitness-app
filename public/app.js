@@ -134,7 +134,7 @@ function renderGoogleButton(containerId) {
     btn.style.opacity = "0.6";
 
     if (IS_CAPACITOR) {
-      const serverUrl = API_BASE || "http://192.168.1.2:3000";
+      const serverUrl = API_BASE || "https://fuelgauge-zhjo.onrender.com";
       const gsiUrl = serverUrl + "/api/auth/google/start";
       try {
         const { Browser } = Capacitor.Plugins;
