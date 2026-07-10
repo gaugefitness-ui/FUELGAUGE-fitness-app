@@ -289,89 +289,9 @@ router.post("/auth/google", async (req, res) => {
 router.get("/auth/google/start", (req, res) => {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const serverUrl = req.protocol + "://" + req.get("host");
-  res.send(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FUELGAUGE - Google Sign-In</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 50%,#16213e 100%);
-    color:#e0e0e0;display:flex;justify-content:center;align-items:center;
-    min-height:100vh;padding:20px}
-  .card{background:rgba(26,26,46,.9);border:1px solid rgba(255,255,255,.08);
-    border-radius:20px;padding:40px 30px;max-width:400px;width:100%;text-align:center}
-  .logo{font-size:1.5rem;font-weight:700;margin-bottom:8px}
-  .logo .dot{display:inline-block;width:10px;height:10px;border-radius:50%;
-    background:var(--neon-red,ff3b5c);margin-right:6px;vertical-align:middle}
-  .sub{color:#888;margin-bottom:30px;font-size:.9rem}
-  #google-btn{display:inline-flex;align-items:center;gap:10px;
-    background:#fff;color:#333;border:none;border-radius:12px;
-    padding:14px 28px;font-size:1rem;font-weight:600;cursor:pointer;
-    box-shadow:0 4px 15px rgba(0,0,0,.3);transition:all .2s}
-  #google-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
-  #google-btn:disabled{opacity:.6;cursor:not-allowed}
-  #status{margin-top:20px;font-size:.9rem;color:#888}
-  #status.error{color:#ff3b5c}
-  #status.ok{color:#00ff88}
-</style>
-</head>
-<body>
-<div class="card">
-  <div class="logo"><span class="dot"></span>FUELGAUGE</div>
-  <p class="sub">Sign in with your Google account</p>
-  <div id="google-btn"></div>
-  <div id="status"></div>
-</div>
-<script src="https://accounts.google.com/gsi/client" async defer
-  onload="initGoogle()" onerror="document.getElementById('status').textContent='Failed to load Google. Check connection.'"></script>
-<script>
-function initGoogle() {
-  if (typeof google === 'undefined' || !google.accounts) {
-    document.getElementById('status').textContent='Google library failed to load';
-    return;
-  }
-  google.accounts.id.initialize({
-    client_id: '${clientId}',
-    callback: handleCredential,
-    auto_select: false,
-    cancel_on_tap_outside: true,
-  });
-  google.accounts.id.renderButton(
-    document.getElementById('google-btn'),
-    { theme: 'outline', size: 'large', width: 280, text: 'continue_with' }
-  );
-}
-async function handleCredential(response) {
-  var s = document.getElementById('status');
-  s.textContent = 'Signing in...';
-  s.className = '';
-  try {
-    var res = await fetch('${serverUrl}/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: response.credential })
-    });
-    var data = await res.json();
-    if (data.ok) {
-      s.textContent = 'Success! Opening app...';
-      s.className = 'ok';
-      var params = encodeURIComponent(JSON.stringify(data));
-      window.location.href = 'fuelgauge://auth?data=' + params;
-    } else {
-      s.textContent = data.error || 'Sign-in failed';
-      s.className = 'error';
-    }
-  } catch(e) {
-    s.textContent = 'Network error: ' + e.message;
-    s.className = 'error';
-  }
-}
-</script>
-</body>
-</html>`);
+  const redirectUri = serverUrl + "/api/auth/google/callback";
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+email+profile&access_type=offline`;
+  res.redirect(googleAuthUrl);
 });
 
 /* ---------- Auth: Google OAuth Callback ---------- */
@@ -417,24 +337,23 @@ router.get("/auth/google/callback", async (req, res) => {
       });
     }
 
-    // Redirect to app via deep link with user data
-    const data = encodeURIComponent(JSON.stringify({
-      ok: true,
-      email: user.email,
-      name: user.name,
-      avatar: user.avatar,
-      admin: user.admin,
-    }));
+    // Return token via HTML that the frontend can read
+    const token = signToken(user);
+    const userData = { ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin };
+    const data = encodeURIComponent(JSON.stringify(userData));
     res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Signing in...</title></head><body>
-<script>window.location.href='fuelgauge://auth?data=${data}';</script>
-<p>Redirecting... <a href="fuelgauge://auth?data=${data}">Tap here if nothing happens</a></p>
+<script>
+var d = JSON.parse(decodeURIComponent('${data}'));
+localStorage.setItem('fg_token', d.token);
+localStorage.setItem('fg_user', JSON.stringify({email:d.email,name:d.name,avatar:d.avatar,admin:d.admin}));
+window.location.href = '/';
+</script>
+<p>Signing in... <a href="/">Tap here if nothing happens</a></p>
 </body></html>`);
   } catch (err) {
     console.error("Google callback error:", err.message);
-    const errMsg = encodeURIComponent(err.message);
     res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Error</title></head><body>
-<script>window.location.href='fuelgauge://auth?error=${errMsg}';</script>
-<p>Error: ${err.message}. <a href="fuelgauge://auth?error=${errMsg}">Tap here if nothing happens</a></p>
+<p>Sign-in failed: ${err.message}. <a href="/login.html">Back to login</a></p>
 </body></html>`);
   }
 });

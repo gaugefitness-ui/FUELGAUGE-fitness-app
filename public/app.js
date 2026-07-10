@@ -146,17 +146,12 @@ function renderGoogleButton(containerId) {
     return;
   }
 
-  // Web: use Google GSI
-  if (typeof google !== "undefined" && google.accounts) {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredential,
-    });
-    google.accounts.id.renderButton(container, { theme: "outline", size: "large", width: "100%", text: "continue_with" });
-  } else {
-    // GSI not loaded yet, retry after delay
-    setTimeout(() => renderGoogleButton(containerId), 500);
-  }
+  // Web: redirect-based flow (reliable, no popup issues)
+  container.innerHTML = `<button class="google-signin-btn" id="${containerId}-btn" type="button">${GOOGLE_BTN_SVG}</button>`;
+  const btn = container.querySelector(`#${containerId}-btn`);
+  btn.addEventListener("click", () => {
+    window.location.href = API + "/auth/google/start";
+  });
 }
 
 /* ---------- AUTH SCREENS ---------- */
