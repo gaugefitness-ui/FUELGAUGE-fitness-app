@@ -1,6 +1,7 @@
 const IS_CAPACITOR_AUTH = window.location.protocol === "capacitor:" || (window.location.protocol === "https:" && window.location.hostname === "localhost");
 const AUTH_BASE = IS_CAPACITOR_AUTH ? (document.querySelector('meta[name="api-server"]')?.content || "https://fuelgauge-zhjo.onrender.com") : "";
 const AUTH_API = AUTH_BASE + "/api/auth";
+const GOOGLE_CLIENT_ID = "449230108797-tks2lkji381a7qbf2qk66vmn72nk4st4.apps.googleusercontent.com";
 
 function showAuthError(msg) {
   const box = document.getElementById("auth-error");
@@ -40,6 +41,32 @@ function showToast(msg) {
   toast.textContent = msg;
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+async function handleGoogleCredential(credential) {
+  try {
+    const data = await authPost("/google", { credential });
+    saveSession(data);
+    window.location.href = "/";
+  } catch (err) {
+    showAuthError(err.message || "Google sign-in failed");
+  }
+}
+
+function initGoogleSignIn() {
+  if (typeof google === "undefined" || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+  });
+  const loginBtn = document.getElementById("google-login-btn");
+  if (loginBtn) {
+    google.accounts.id.renderButton(loginBtn, { theme: "outline", size: "large", width: "100%", text: "continue_with" });
+  }
+  const regBtn = document.getElementById("google-register-btn");
+  if (regBtn) {
+    google.accounts.id.renderButton(regBtn, { theme: "outline", size: "large", width: "100%", text: "continue_with" });
+  }
 }
 
 function initAuthPage(mode) {
@@ -112,6 +139,9 @@ function initAuthPage(mode) {
       if (e.key === "Enter") document.getElementById("rg-submit").click();
     });
   }
+
+  // Initialize Google Sign-In after a short delay to let GSI script load
+  setTimeout(initGoogleSignIn, 500);
 }
 
 function showVerifyUI(card, email) {

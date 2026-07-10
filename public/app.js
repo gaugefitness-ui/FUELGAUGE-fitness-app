@@ -126,14 +126,12 @@ function renderGoogleButton(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  container.innerHTML = `<button class="google-signin-btn" id="${containerId}-btn" type="button">${GOOGLE_BTN_SVG}</button>`;
-  const btn = container.querySelector(`#${containerId}-btn`);
-
-  btn.addEventListener("click", async () => {
-    btn.disabled = true;
-    btn.style.opacity = "0.6";
-
-    if (IS_CAPACITOR) {
+  if (IS_CAPACITOR) {
+    container.innerHTML = `<button class="google-signin-btn" id="${containerId}-btn" type="button">${GOOGLE_BTN_SVG}</button>`;
+    const btn = container.querySelector(`#${containerId}-btn`);
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      btn.style.opacity = "0.6";
       const serverUrl = API_BASE || "https://fuelgauge-zhjo.onrender.com";
       const gsiUrl = serverUrl + "/api/auth/google/start";
       try {
@@ -144,12 +142,21 @@ function renderGoogleButton(containerId) {
       }
       btn.disabled = false;
       btn.style.opacity = "1";
-      return;
-    }
+    });
+    return;
+  }
 
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  });
+  // Web: use Google GSI
+  if (typeof google !== "undefined" && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+    });
+    google.accounts.id.renderButton(container, { theme: "outline", size: "large", width: "100%", text: "continue_with" });
+  } else {
+    // GSI not loaded yet, retry after delay
+    setTimeout(() => renderGoogleButton(containerId), 500);
+  }
 }
 
 /* ---------- AUTH SCREENS ---------- */

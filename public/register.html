@@ -48,6 +48,7 @@
       <input id="rg-password" type="password" placeholder="Min 6 characters" autocomplete="new-password">
       <button class="btn btn-primary" id="rg-submit">Create Account</button>
       <div class="auth-divider"><span>or</span></div>
+      <div id="google-register-btn" style="width:100%;"></div>
       <p class="auth-switch">Already have an account? <a href="/login.html">Sign in</a></p>
       <div class="auth-features">
         <div class="auth-feature"><span style="color:var(--teal);">&#10003;</span> Track calories & macros</div>
@@ -59,6 +60,7 @@
 
 </div>
 <div class="toast" id="toast"></div>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="/auth.js"></script>
 <script>initAuthPage("register");</script>
 </body>
