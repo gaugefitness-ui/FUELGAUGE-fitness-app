@@ -56,9 +56,10 @@ app.use(globalLimiter);
 // Rate limiting: auth endpoints (stricter)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => req.ip || req.connection?.remoteAddress || "unknown",
   message: { error: "Too many auth attempts, please try again later." },
 });
 
@@ -86,9 +87,13 @@ app.use((req, res, next) => {
 
 // --- Routes ---
 app.use("/api", (req, res, next) => {
-  if (req.path.startsWith("/auth/")) return authLimiter(req, res, next);
-  if (req.path.startsWith("/payment/")) return paymentLimiter(req, res, next);
-  next();
+  try {
+    if (req.path.startsWith("/auth/")) return authLimiter(req, res, next);
+    if (req.path.startsWith("/payment/")) return paymentLimiter(req, res, next);
+    next();
+  } catch (e) {
+    next();
+  }
 }, apiRoutes);
 
 app.use(express.static(path.join(__dirname, "public")));
