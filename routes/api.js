@@ -288,8 +288,8 @@ router.post("/auth/google", async (req, res) => {
 /* ---------- Auth: Google Start (server-rendered page for phone browser) ---------- */
 router.get("/auth/google/start", (req, res) => {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
-  const serverUrl = req.protocol + "://" + req.get("host");
-  const redirectUri = serverUrl + "/api/auth/google/callback";
+  const host = req.get("host");
+  const redirectUri = `https://${host}/api/auth/google/callback`;
   const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+email+profile&access_type=offline`;
   res.redirect(googleAuthUrl);
 });
@@ -302,8 +302,9 @@ router.get("/auth/google/callback", async (req, res) => {
       return res.send("<p>No code received.</p>");
     }
 
-    // Exchange auth code for tokens — derive redirect_uri from the actual request
-    const redirectUri = req.protocol + "://" + req.get("host") + "/api/auth/google/callback";
+    // Exchange auth code for tokens — force HTTPS for Render proxy
+    const host = req.get("host");
+    const redirectUri = `https://${host}/api/auth/google/callback`;
     const { tokens } = await googleClient.getToken({
       code,
       redirect_uri: redirectUri,
