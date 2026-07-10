@@ -9,6 +9,17 @@ const { signToken, requireAuth, requirePremium } = require("../middleware/auth")
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "", process.env.GOOGLE_CLIENT_SECRET || "");
 
+router.get("/_test", async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    const hash = await bcrypt.hash("test", 10);
+    const match = await bcrypt.compare("test", hash);
+    res.json({ ok: true, userCount, bcryptWorks: match, nodeVersion: process.version });
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -224,7 +235,8 @@ router.post("/auth/login", async (req, res) => {
     const token = signToken(user);
     res.json({ ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Login error:", err.message, err.stack);
+    res.status(500).json({ error: err.message || "Login failed" });
   }
 });
 
