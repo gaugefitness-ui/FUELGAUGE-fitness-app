@@ -6,9 +6,23 @@ body.auth-body{margin:0;min-height:100vh;background:radial-gradient(120% 120% at
 .auth-hero::after{content:"";position:absolute;right:-120px;top:-120px;width:340px;height:340px;border-radius:50%;
   background:radial-gradient(circle,rgba(25,194,160,.16) 0%,transparent 70%);}
 .auth-hero-mid{position:relative;}
-.auth-hero-mid h1{font-family:'Oswald',sans-serif;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;}
+.auth-hero-mid h1,.auth-hero-mid .quote-heading{font-family:'Oswald',sans-serif;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px;}
+.quote-heading{font-family:'Oswald',sans-serif;font-style:italic;letter-spacing:.5px;}
 .auth-hero-mid p{color:var(--ink-dim);font-size:14px;line-height:1.6;max-width:360px;}
 .hero-gauge{display:block;margin-bottom:4px;}
+.auth-hero-icons{display:flex;gap:16px;margin:8px 0 16px;}
+.auth-hero-icon{width:56px;height:56px;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:16px;
+  display:flex;align-items:center;justify-content:center;transition:all .3s ease;}
+.auth-hero-icon svg{width:30px;height:30px;}
+.auth-hero-icon.icon-fire{border-color:rgba(255,60,31,0.25);box-shadow:0 0 20px rgba(255,60,31,0.08);}
+.auth-hero-icon.icon-fire:hover{border-color:var(--neon-red);box-shadow:0 0 24px rgba(255,60,31,0.2);transform:translateY(-2px);}
+.auth-hero-icon.icon-heart{border-color:rgba(0,229,160,0.25);box-shadow:0 0 20px rgba(0,229,160,0.08);}
+.auth-hero-icon.icon-heart:hover{border-color:var(--teal);box-shadow:0 0 24px rgba(0,229,160,0.2);transform:translateY(-2px);}
+.auth-hero-icon.icon-dumbbell{border-color:rgba(255,176,32,0.25);box-shadow:0 0 20px rgba(255,176,32,0.08);}
+.auth-hero-icon.icon-dumbbell:hover{border-color:var(--amber);box-shadow:0 0 24px rgba(255,176,32,0.2);transform:translateY(-2px);}
+.auth-quote-strip{display:flex;gap:8px;margin-bottom:12px;}
+.quote-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink-dim);
+  background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:20px;padding:5px 12px;}
 .auth-hero-bottom{display:flex;flex-direction:column;gap:10px;position:relative;}
 .hero-pill{background:var(--panel-raised);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--ink-dim);font-family:'JetBrains Mono',monospace;}
 .hero-pill b{color:var(--ink);font-family:'Inter',sans-serif;margin-right:6px;}
