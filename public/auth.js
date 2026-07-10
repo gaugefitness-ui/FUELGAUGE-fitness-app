@@ -1,7 +1,7 @@
 const IS_CAPACITOR_AUTH = window.location.protocol === "capacitor:" || (window.location.protocol === "https:" && window.location.hostname === "localhost");
 const AUTH_BASE = IS_CAPACITOR_AUTH ? (document.querySelector('meta[name="api-server"]')?.content || "https://fuelgauge-zhjo.onrender.com") : "";
 const AUTH_API = AUTH_BASE + "/api/auth";
-const GOOGLE_CLIENT_ID = "449230108797-tks2lkji381a7qbf2qk66vmn72nk4st4.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "728908685736-6a9oqmkt0482402smb4aq1dn74bsn4pl.apps.googleusercontent.com";
 
 function showAuthError(msg) {
   const box = document.getElementById("auth-error");
