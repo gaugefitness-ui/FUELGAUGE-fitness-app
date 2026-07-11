@@ -1,3 +1,4 @@
+require("express-async-errors");
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -5,6 +6,7 @@ const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const rateLimit = require("express-rate-limit");
 const apiRoutes = require("./routes/api");
 const { User } = require("./models");
 
@@ -14,26 +16,26 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://gaugefitness_db_user:%
 
 app.set("trust proxy", 1);
 
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false,
-}));
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 app.use(cors({
-  origin: function (origin, callback) {
-    callback(null, true);
-  },
+  origin: function (origin, callback) { callback(null, true); },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
+app.use(globalLimiter);
+
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false, limit: "1mb" }));
-
-app.get("/api/_health", (req, res) => {
-  res.json({ ok: true, time: new Date().toISOString() });
-});
 
 app.use("/api", apiRoutes);
 
@@ -44,7 +46,7 @@ app.get("*", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err.message);
+  console.error("Unhandled error:", err.message, err.stack);
   res.status(500).json({ error: "Internal server error" });
 });
 
@@ -73,28 +75,23 @@ mongoose.connect(MONGO_URI)
       if (!admin) {
         const hash = await bcrypt.hash(adminPass, 10);
         admin = await User.create({
-          email: adminEmail,
-          name: "FUELGAUGE Admin",
-          verified: true,
-          admin: true,
-          password: hash,
+          email: adminEmail, name: "FUELGAUGE Admin",
+          verified: true, admin: true, password: hash,
         });
-        console.log("Admin account created:", adminEmail);
+        console.log("Admin created:", adminEmail);
       } else if (!admin.admin) {
         admin.admin = true;
         await admin.save();
-        console.log("Existing user promoted to admin:", adminEmail);
-      } else {
-        console.log("Admin account exists:", adminEmail);
+        console.log("Promoted to admin:", adminEmail);
       }
       await User.updateMany({ email: { $ne: adminEmail }, admin: true }, { $set: { admin: false } });
     } catch (err) {
       console.error("Admin seed error:", err.message);
     }
 
-    app.listen(PORT, () => console.log(`FUELGAUGE server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`FUELGAUGE running on port ${PORT}`));
   })
   .catch(err => {
-    console.error("MongoDB connection error:", err.message);
+    console.error("MongoDB error:", err.message);
     process.exit(1);
   });
