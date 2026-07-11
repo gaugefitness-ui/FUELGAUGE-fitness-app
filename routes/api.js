@@ -206,6 +206,8 @@ router.post("/auth/login", async (req, res) => {
       return res.status(403).json({ error: "Email not verified. Please check your inbox for the verification code.", needsVerification: true });
     }
     const token = signToken(user);
+    user.lastLogin = new Date();
+    await user.save();
     res.json({ ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin });
   } catch (err) {
     console.error("Login error:", err.message, err.stack);
@@ -694,7 +696,10 @@ router.get("/admin/users", requireAuth, async (req, res) => {
   try {
     if (!req.user || !req.user.admin) return res.status(403).json({ error: "Admin access required" });
     const users = await User.find({}, { password: 0, verifyCode: 0, verifyExpires: 0 }).sort({ createdAt: -1 });
-    res.json(users);
+    res.json(users.map(u => ({
+      ...u.toObject(),
+      lastLogin: u.lastLogin || null,
+    })));
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

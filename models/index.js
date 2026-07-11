@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   googleId: { type: String, default: null },
   plan: { type: String, default: "basic" },
   planExpiresAt: { type: Date, default: null },
+  lastLogin: Date,
 }, { timestamps: true });
 
 const ProfileSchema = new mongoose.Schema({
