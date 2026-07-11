@@ -8,8 +8,6 @@ module.exports = [
   { name: "Salmon, cooked", cal: 208, protein: 22, carb: 0, fat: 13, category: "Protein" },
   { name: "Tuna, canned in water", cal: 116, protein: 26, carb: 0, fat: 0.8, category: "Protein" },
   { name: "Shrimp, cooked", cal: 99, protein: 24, carb: 0.2, fat: 0.3, category: "Protein" },
-  { name: "Beef, lean ground, cooked", cal: 217, protein: 26, carb: 0, fat: 12, category: "Protein" },
-  { name: "Beef steak, sirloin, cooked", cal: 206, protein: 29, carb: 0, fat: 9, category: "Protein" },
   { name: "Pork chop, cooked", cal: 231, protein: 27, carb: 0, fat: 13, category: "Protein" },
   { name: "Turkey breast, cooked", cal: 135, protein: 30, carb: 0, fat: 1, category: "Protein" },
   { name: "Tofu, firm", cal: 76, protein: 8, carb: 1.9, fat: 4.8, category: "Protein" },
@@ -36,7 +34,6 @@ module.exports = [
   { name: "Lupini beans, cooked", cal: 103, protein: 16, carb: 4, fat: 3, category: "Protein" },
   { name: "Soy milk", cal: 33, protein: 2.8, carb: 1.8, fat: 1.5, category: "Protein" },
   { name: "Casein protein powder", cal: 350, protein: 80, carb: 8, fat: 3, category: "Protein" },
-  { name: "Beef jerky", cal: 410, protein: 33, carb: 16, fat: 26, category: "Protein" },
   { name: "Smoked salmon", cal: 117, protein: 18, carb: 0, fat: 4, category: "Protein" },
   { name: "Prawns, cooked", cal: 105, protein: 20, carb: 0.2, fat: 2, category: "Protein" },
   { name: "Crab, cooked", cal: 97, protein: 21, carb: 0, fat: 1, category: "Protein" },
@@ -130,7 +127,6 @@ module.exports = [
 
   // --- Common dishes / fast food ---
   { name: "Pizza, cheese slice", cal: 266, protein: 11, carb: 33, fat: 10, category: "Mixed dish" },
-  { name: "Burger, beef with bun", cal: 295, protein: 17, carb: 24, fat: 14, category: "Mixed dish" },
   { name: "French fries", cal: 312, protein: 3.4, carb: 41, fat: 15, category: "Mixed dish" },
   { name: "Fried chicken", cal: 246, protein: 17, carb: 8, fat: 15, category: "Mixed dish" },
   { name: "Sushi roll (avg)", cal: 150, protein: 5, carb: 28, fat: 1.5, category: "Mixed dish" },
