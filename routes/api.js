@@ -103,37 +103,28 @@ router.post("/auth/register", async (req, res) => {
       verifyExpires: new Date(Date.now() + 15 * 60 * 1000),
       admin: false,
     });
-    let emailSent = false;
-    if (process.env.EMAIL_USER) {
-      transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "FUELGAUGE - Verify your email",
-        html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
-          <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
-          <p>Your verification code is:</p>
-          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
-          <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
-        </div>`,
-      }).then(() => { emailSent = true; console.log("Verification email sent to:", email); })
-        .catch(err => console.error("Email send failed:", err.message));
-    }
-    if (phone) {
-      sendSMSOTP(phone, code).then(waResult => {
-        if (waResult.skipped) console.log("SMS not configured. OTP:", code);
-      }).catch(err => console.error("SMS OTP failed:", err.message));
-    }
-    const response = { ok: true, userId: user._id };
-    if (emailSent) {
-      response.message = "Verification code sent to your email";
-    } else if (process.env.EMAIL_USER) {
-      response.message = "Account created but email could not be sent. Please use Resend code.";
-      response.emailWarning = true;
-    } else {
-      response.message = "Account created. Email verification is not configured.";
-      response.emailWarning = true;
-    }
-    res.json(response);
+    // Respond FIRST, then try email in background
+    res.json({ ok: true, userId: user._id, message: "Account created. Check your email for verification code." });
+    // Fire-and-forget email + SMS (completely detached from response)
+    process.nextTick(() => {
+      if (process.env.EMAIL_USER) {
+        transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "FUELGAUGE - Verify your email",
+          html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
+            <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
+            <p>Your verification code is:</p>
+            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
+            <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
+          </div>`,
+        }).then(() => console.log("Verification email sent to:", email))
+          .catch(err => console.error("Email send failed:", err.message));
+      }
+      if (phone) {
+        sendSMSOTP(phone, code).catch(err => console.error("SMS OTP failed:", err.message));
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
