@@ -12,9 +12,19 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "", proces
 router.get("/_test", async (req, res) => {
   try {
     const userCount = await User.countDocuments();
+    const testUser = await User.findOne({ email: "gaugefitness@gmail.com" }).select("-password -verifyCode -verifyExpires");
     const hash = await bcrypt.hash("test", 10);
     const match = await bcrypt.compare("test", hash);
-    res.json({ ok: true, userCount, bcryptWorks: match, nodeVersion: process.version });
+    res.json({ ok: true, userCount, testUser: testUser ? { email: testUser.email, admin: testUser.admin, plan: testUser.plan } : null, bcryptWorks: match, nodeVersion: process.version });
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
+router.post("/_test-login", async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    res.json({ step: 1, email, password: password ? "provided" : "missing" });
   } catch (err) {
     res.status(500).json({ error: err.message, stack: err.stack });
   }
