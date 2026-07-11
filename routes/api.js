@@ -981,4 +981,59 @@ router.delete("/gyms/:id", requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.get("/gyms/nearby", async (req, res) => {
+  try {
+    const lat = parseFloat(req.query.lat);
+    const lng = parseFloat(req.query.lng);
+    if (isNaN(lat) || isNaN(lng)) return res.status(400).json({ error: "lat/lng required" });
+
+    const q = `[out:json][timeout:10];(node["amenity"="gym"](around:5000,${lat},${lng});node["leisure"="fitness_centre"](around:5000,${lat},${lng});way["amenity"="gym"](around:5000,${lat},${lng});way["leisure"="fitness_centre"](around:5000,${lat},${lng}););out center 15;`;
+
+    const resp = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "FuelGaugeFitness/1.0" },
+      body: `data=${encodeURIComponent(q)}`,
+      signal: AbortSignal.timeout(12000),
+    });
+
+    if (!resp.ok) return res.status(502).json({ error: "Overpass API error", status: resp.status });
+    const data = await resp.json();
+    const elements = data.elements || [];
+
+    const R = 6371000;
+    const toRad = (d) => (d * Math.PI) / 180;
+    const dist = (a, b) => {
+      const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+      const x = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    };
+
+    const gyms = elements
+      .map((el) => {
+        let gLat, gLng;
+        if (el.type === "node") { gLat = el.lat; gLng = el.lon; }
+        else if (el.center) { gLat = el.center.lat; gLng = el.center.lon; }
+        else return null;
+        const t = el.tags || {};
+        return {
+          name: t.name || "Gym",
+          lat: gLat, lng: gLng,
+          address: [t["addr:street"], t["addr:housenumber"], t["addr:city"]].filter(Boolean).join(" "),
+          phone: t.phone || t["contact:phone"] || "",
+          website: t.website || t["contact:website"] || "",
+          hours: t.opening_hours || "",
+          distance: dist({ lat, lng }, { lat: gLat, lng: gLng }),
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10);
+
+    res.json({ gyms });
+  } catch (err) {
+    console.error("Gyms nearby error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
