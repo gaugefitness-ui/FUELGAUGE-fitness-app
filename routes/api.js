@@ -15,6 +15,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER || "",
     pass: process.env.EMAIL_PASS || "",
   },
+  connectionTimeout: 5000,
+  greetingTimeout: 5000,
+  socketTimeout: 5000,
 });
 
 let twilioClient = null;
@@ -90,7 +93,6 @@ router.post("/auth/register", async (req, res) => {
     if (existing) return res.status(409).json({ error: "Email already registered" });
     const hash = await bcrypt.hash(password, 10);
     const code = generateCode();
-    const userCount = await User.countDocuments();
     const user = await User.create({
       email: email.toLowerCase(),
       password: hash,

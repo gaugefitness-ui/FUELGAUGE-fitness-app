@@ -64,8 +64,14 @@ mongoose.connect(MONGO_URI)
         const testTransporter = nodemailer.createTransport({
           service: "gmail",
           auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+          connectionTimeout: 5000,
+          greetingTimeout: 5000,
+          socketTimeout: 5000,
         });
-        await testTransporter.verify();
+        await Promise.race([
+          testTransporter.verify(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP verify timeout")), 8000))
+        ]);
         console.log("Email transporter verified");
       } catch (err) {
         console.error("Email transporter failed:", err.message);
