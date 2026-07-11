@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff3c1f">
+<title>FUELGAUGE - Download</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--asphalt:#0d0f14;--panel:#151821;--panel-raised:#1c2030;--neon-red:#ff3c1f;--teal:#00e5a0;--ink:#eee7d6;--ink-dim:#6b7189;--line:#252a38;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;background:var(--asphalt);color:var(--ink);font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;
+background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=900&fit=crop&q=70');background-size:cover;background-attachment:fixed;background-position:center;}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(13,15,20,0.93) 0%,rgba(13,15,20,0.88) 50%,rgba(13,15,20,0.95) 100%);z-index:0;}
+.card{position:relative;z-index:1;max-width:420px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:48px 32px;text-align:center;}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--neon-red);box-shadow:0 0 12px rgba(255,60,31,0.5),0 0 24px rgba(255,60,31,0.3);display:inline-block;margin-right:10px;vertical-align:middle;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 12px rgba(255,60,31,0.5),0 0 24px rgba(255,60,31,0.3);}50%{box-shadow:0 0 18px rgba(255,60,31,0.7),0 0 36px rgba(255,60,31,0.4);}}
+h1{font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;letter-spacing:3px;margin:24px 0 8px;}
+.subtitle{color:var(--ink-dim);font-size:14px;margin-bottom:36px;line-height:1.5;}
+.features{text-align:left;margin-bottom:32px;}
+.feature{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink);}
+.feature:last-child{border-bottom:none;}
+.feature .icon{width:32px;height:32px;border-radius:8px;background:var(--panel-raised);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.download-btn{display:block;width:100%;padding:16px;background:var(--neon-red);color:#fff;font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(255,60,31,0.4);}
+.download-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,60,31,0.5);}
+.download-btn:active{transform:translateY(0);}
+.info{margin-top:20px;font-size:12px;color:var(--ink-dim);line-height:1.6;}
+.info a{color:var(--teal);text-decoration:none;}
+.web-link{display:inline-block;margin-top:20px;color:var(--teal);font-size:13px;text-decoration:none;font-weight:500;}
+.web-link:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div><span class="dot"></span><span style="font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;vertical-align:middle;">FUELGAUGE</span></div>
+  <h1>DOWNLOAD THE APP</h1>
+  <p class="subtitle">Track calories, macros, workouts, and progress — all in one place. Built for Android.</p>
+  <div class="features">
+    <div class="feature"><div class="icon">&#127860;</div>Food logging & calorie tracking</div>
+    <div class="feature"><div class="icon">&#128170;</div>Workout plans & exercise library</div>
+    <div class="feature"><div class="icon">&#128200;</div>Weight & progress charts</div>
+    <div class="feature"><div class="icon">&#128167;</div>Water intake tracker</div>
+    <div class="feature"><div class="icon">&#127942;</div>Premium plans & admin tools</div>
+  </div>
+  <a href="/fuelgauge.apk" download class="download-btn">&#11015; Download APK</a>
+  <div class="info">
+    Version 1.0.0 &middot; ~48 MB<br>
+    Requires Android 6.0+<br><br>
+    <strong>After download:</strong> Open the APK file and tap "Install" when prompted. You may need to enable "Install from unknown sources" in your phone settings.
+  </div>
+  <a href="/" class="web-link">or use the web version &rarr;</a>
+</div>
+</body>
+</html>
