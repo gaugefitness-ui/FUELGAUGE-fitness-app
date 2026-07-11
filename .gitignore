@@ -4,6 +4,6 @@ android/app/build/
 android/.gradle/
 android/build/
 ios/
+# APK files ignored except public/fuelgauge.apk
 *.apk
-!public/fuelgauge.apk
 .DS_Store
