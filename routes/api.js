@@ -103,23 +103,18 @@ router.post("/auth/register", async (req, res) => {
     });
     let emailSent = false;
     if (process.env.EMAIL_USER) {
-      try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "FUELGAUGE - Verify your email",
-          html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
-            <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
-            <p>Your verification code is:</p>
-            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
-            <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
-          </div>`,
-        });
-        emailSent = true;
-        console.log("Verification email sent to:", email);
-      } catch (err) {
-        console.error("Email send failed:", err.message);
-      }
+      transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "FUELGAUGE - Verify your email",
+        html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
+          <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
+          <p>Your verification code is:</p>
+          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
+          <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
+        </div>`,
+      }).then(() => { emailSent = true; console.log("Verification email sent to:", email); })
+        .catch(err => console.error("Email send failed:", err.message));
     }
     if (phone) {
       sendSMSOTP(phone, code).then(waResult => {
@@ -174,22 +169,18 @@ router.post("/auth/resend", async (req, res) => {
     await user.save();
     let emailSent = false;
     if (process.env.EMAIL_USER) {
-      try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "FUELGAUGE - Your verification code",
-          html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
-            <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
-            <p>Your new verification code is:</p>
-            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
-            <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
-          </div>`,
-        });
-        emailSent = true;
-      } catch (err) {
-        console.error("Email resend failed:", err.message);
-      }
+      transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "FUELGAUGE - Your verification code",
+        html: `<div style="font-family:sans-serif;text-align:center;padding:30px;">
+          <h2 style="color:#ff3c1f;">FUELGAUGE</h2>
+          <p>Your new verification code is:</p>
+          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0d0f14;background:#00e5a0;padding:16px 24px;border-radius:12px;display:inline-block;">${code}</div>
+          <p style="color:#666;margin-top:20px;">Code expires in 15 minutes.</p>
+        </div>`,
+      }).then(() => { emailSent = true; console.log("Verification email resent to:", email); })
+        .catch(err => console.error("Email resend failed:", err.message));
     }
     if (user.phone) {
       sendSMSOTP(user.phone, code).then(waResult => {
