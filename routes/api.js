@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const { OAuth2Client } = require("google-auth-library");
 const foods = require("../data/foods");
-const { User, Profile, FoodLogEntry, WeightEntry, WorkoutCompletion, WorkoutPlan, WaterLog, Measurement, WorkoutLog, PersonalRecord } = require("../models");
+const { User, Profile, FoodLogEntry, WeightEntry, WorkoutCompletion, WorkoutPlan, WaterLog, Measurement, WorkoutLog, PersonalRecord, Gym } = require("../models");
 const { signToken, requireAuth, requirePremium } = require("../middleware/auth");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "", process.env.GOOGLE_CLIENT_SECRET || "");
@@ -950,6 +950,34 @@ router.get("/premium/exercise-guide/:planKey", requireAuth, requirePremium, asyn
     const guide = guides[req.params.planKey];
     if (!guide) return res.status(404).json({ error: "Guide not found" });
     res.json(guide);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ---------- User Gyms (JWT protected) ----------
+router.get("/gyms", requireAuth, async (req, res) => {
+  try {
+    const gyms = await Gym.find({ userId: req.userId.toString() }).sort({ createdAt: -1 });
+    res.json(gyms);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/gyms", requireAuth, async (req, res) => {
+  try {
+    const { name, address, phone, website, hours, lat, lng } = req.body;
+    if (!name) return res.status(400).json({ error: "Gym name is required" });
+    const gym = await Gym.create({
+      userId: req.userId.toString(),
+      name, address: address || "", phone: phone || "", website: website || "",
+      hours: hours || "", lat: lat || 0, lng: lng || 0,
+    });
+    res.json(gym);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.delete("/gyms/:id", requireAuth, async (req, res) => {
+  try {
+    await Gym.deleteOne({ _id: req.params.id, userId: req.userId.toString() });
+    res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

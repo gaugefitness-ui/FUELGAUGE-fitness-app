@@ -112,6 +112,17 @@ const PersonalRecordSchema = new mongoose.Schema({
   date: { type: String, required: true },
 }, { timestamps: true });
 
+const GymSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  name: { type: String, required: true },
+  address: { type: String, default: "" },
+  phone: { type: String, default: "" },
+  website: { type: String, default: "" },
+  hours: { type: String, default: "" },
+  lat: { type: Number, default: 0 },
+  lng: { type: Number, default: 0 },
+}, { timestamps: true });
+
 module.exports = {
   User: mongoose.model("User", UserSchema),
   Profile: mongoose.model("Profile", ProfileSchema),
@@ -124,4 +135,5 @@ module.exports = {
   Measurement: mongoose.model("Measurement", MeasurementSchema),
   WorkoutLog: mongoose.model("WorkoutLog", WorkoutLogSchema),
   PersonalRecord: mongoose.model("PersonalRecord", PersonalRecordSchema),
+  Gym: mongoose.model("Gym", GymSchema),
 };
