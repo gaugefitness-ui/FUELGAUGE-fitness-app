@@ -5,4 +5,5 @@ android/.gradle/
 android/build/
 ios/
 *.apk
+!public/fuelgauge.apk
 .DS_Store
