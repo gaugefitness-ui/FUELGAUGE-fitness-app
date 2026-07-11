@@ -280,15 +280,17 @@ router.post("/auth/google", async (req, res) => {
 router.get("/auth/google/start", (req, res) => {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const host = req.get("host");
-  const redirectUri = `https://${host}/api/auth/google/callback`;
-  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+email+profile&access_type=offline`;
+  const appRedirect = req.query.redirect_uri || "";
+  const serverRedirect = `https://${host}/api/auth/google/callback`;
+  const state = appRedirect ? Buffer.from(appRedirect).toString("base64") : "";
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(serverRedirect)}&response_type=code&scope=openid+email+profile&access_type=offline${state ? "&state=" + encodeURIComponent(state) : ""}`;
   res.redirect(googleAuthUrl);
 });
 
 /* ---------- Auth: Google OAuth Callback ---------- */
 router.get("/auth/google/callback", async (req, res) => {
   try {
-    const { code } = req.query;
+    const { code, state } = req.query;
     if (!code) {
       return res.send("<p>No code received.</p>");
     }
@@ -328,9 +330,19 @@ router.get("/auth/google/callback", async (req, res) => {
       });
     }
 
-    // Return token via HTML that the frontend can read
     const token = signToken(user);
     const userData = { ok: true, token, email: user.email, name: user.name, avatar: user.avatar, admin: user.admin };
+
+    // If state contains an app redirect URI, redirect there (mobile app flow)
+    if (state) {
+      try {
+        const appRedirect = Buffer.from(state, "base64").toString();
+        const appData = encodeURIComponent(JSON.stringify(userData));
+        return res.redirect(`${appRedirect}?data=${appData}`);
+      } catch (e) { /* fall through to HTML response */ }
+    }
+
+    // Web flow — return HTML that stores token in localStorage
     const data = encodeURIComponent(JSON.stringify(userData));
     res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Signing in...</title></head><body>
 <script>
