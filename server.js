@@ -37,6 +37,10 @@ app.use(globalLimiter);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false, limit: "1mb" }));
 
+app.post("/api/_bare-test", (req, res) => {
+  res.json({ ok: true, body: req.body, method: req.method });
+});
+
 app.use("/api", apiRoutes);
 
 app.use(express.static(path.join(__dirname, "public")));
