@@ -985,15 +985,16 @@ router.get("/gyms/nearby", async (req, res) => {
   try {
     const lat = parseFloat(req.query.lat);
     const lng = parseFloat(req.query.lng);
+    const radius = parseInt(req.query.radius) || 25000;
     if (isNaN(lat) || isNaN(lng)) return res.status(400).json({ error: "lat/lng required" });
 
-    const q = `[out:json][timeout:10];(node["amenity"="gym"](around:5000,${lat},${lng});node["leisure"="fitness_centre"](around:5000,${lat},${lng});way["amenity"="gym"](around:5000,${lat},${lng});way["leisure"="fitness_centre"](around:5000,${lat},${lng}););out center 15;`;
+    const q = `[out:json][timeout:15];(node["amenity"="gym"](around:${radius},${lat},${lng});node["leisure"="fitness_centre"](around:${radius},${lat},${lng});node["sport"="fitness"](around:${radius},${lat},${lng});way["amenity"="gym"](around:${radius},${lat},${lng});way["leisure"="fitness_centre"](around:${radius},${lat},${lng});way["sport"="fitness"](around:${radius},${lat},${lng}););out center 30;`;
 
     const resp = await fetch("https://overpass-api.de/api/interpreter", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "FuelGaugeFitness/1.0" },
       body: `data=${encodeURIComponent(q)}`,
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(15000),
     });
 
     if (!resp.ok) return res.status(502).json({ error: "Overpass API error", status: resp.status });
@@ -1027,7 +1028,7 @@ router.get("/gyms/nearby", async (req, res) => {
       })
       .filter(Boolean)
       .sort((a, b) => a.distance - b.distance)
-      .slice(0, 10);
+      .slice(0, 20);
 
     res.json({ gyms });
   } catch (err) {
