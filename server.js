@@ -99,7 +99,16 @@ mongoose.connect(MONGO_URI)
       console.error("Admin seed error:", err.message);
     }
 
-    app.listen(PORT, () => console.log(`FUELGAUGE running on port ${PORT}`));
+    app.listen(PORT, () => {
+      console.log(`FUELGAUGE running on port ${PORT}`);
+      // Warm up Overpass API connection
+      fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "FuelGaugeFitness/1.0" },
+        body: "data=[out:json][timeout:5];node[amenity=gym](around:1000,27.7172,85.3240);out%20center%201;",
+        signal: AbortSignal.timeout(8000),
+      }).then(r => console.log("Overpass warmup:", r.status)).catch(() => {});
+    });
   })
   .catch(err => {
     console.error("MongoDB error:", err.message);
