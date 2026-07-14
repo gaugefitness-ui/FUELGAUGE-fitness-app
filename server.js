@@ -54,63 +54,72 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-mongoose.connect(MONGO_URI)
-  .then(async () => {
-    console.log("Connected to MongoDB");
-
-    if (process.env.EMAIL_USER) {
-      try {
-        const nodemailer = require("nodemailer");
-        const testTransporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-          connectionTimeout: 5000,
-          greetingTimeout: 5000,
-          socketTimeout: 5000,
-        });
-        await Promise.race([
-          testTransporter.verify(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP verify timeout")), 8000))
-        ]);
-        console.log("Email transporter verified");
-      } catch (err) {
-        console.error("Email transporter failed:", err.message);
-      }
-    }
-
+async function connectWithRetry(retries = 5, delay = 5000) {
+  for (let i = 0; i < retries; i++) {
     try {
-      const adminEmail = "gaugefitness@gmail.com";
-      const adminPass = "98@David";
-      let admin = await User.findOne({ email: adminEmail });
-      if (!admin) {
-        const hash = await bcrypt.hash(adminPass, 10);
-        admin = await User.create({
-          email: adminEmail, name: "FUELGAUGE Admin",
-          verified: true, admin: true, password: hash,
-        });
-        console.log("Admin created:", adminEmail);
-      } else if (!admin.admin) {
-        admin.admin = true;
-        await admin.save();
-        console.log("Promoted to admin:", adminEmail);
-      }
-      await User.updateMany({ email: { $ne: adminEmail }, admin: true }, { $set: { admin: false } });
+      await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 });
+      console.log("Connected to MongoDB");
+      return;
     } catch (err) {
-      console.error("Admin seed error:", err.message);
+      console.error(`MongoDB connection attempt ${i + 1} failed: ${err.message}`);
+      if (i < retries - 1) {
+        console.log(`Retrying in ${delay / 1000}s...`);
+        await new Promise(r => setTimeout(r, delay));
+      }
     }
+  }
+  console.error("Could not connect to MongoDB after retries. Starting server anyway...");
+}
 
-    app.listen(PORT, () => {
-      console.log(`FUELGAUGE running on port ${PORT}`);
-      // Warm up Overpass API connection
-      fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "FuelGaugeFitness/1.0" },
-        body: "data=[out:json][timeout:5];node[amenity=gym](around:1000,27.7172,85.3240);out%20center%201;",
-        signal: AbortSignal.timeout(8000),
-      }).then(r => console.log("Overpass warmup:", r.status)).catch(() => {});
-    });
-  })
-  .catch(err => {
-    console.error("MongoDB error:", err.message);
-    process.exit(1);
+connectWithRetry().then(async () => {
+  if (process.env.EMAIL_USER) {
+    try {
+      const nodemailer = require("nodemailer");
+      const testTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000,
+        socketTimeout: 5000,
+      });
+      await Promise.race([
+        testTransporter.verify(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP verify timeout")), 8000))
+      ]);
+      console.log("Email transporter verified");
+    } catch (err) {
+      console.error("Email transporter failed:", err.message);
+    }
+  }
+
+  try {
+    const adminEmail = "gaugefitness@gmail.com";
+    const adminPass = "98@David";
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      const hash = await bcrypt.hash(adminPass, 10);
+      admin = await User.create({
+        email: adminEmail, name: "FUELGAUGE Admin",
+        verified: true, admin: true, password: hash,
+      });
+      console.log("Admin created:", adminEmail);
+    } else if (!admin.admin) {
+      admin.admin = true;
+      await admin.save();
+      console.log("Promoted to admin:", adminEmail);
+    }
+    await User.updateMany({ email: { $ne: adminEmail }, admin: true }, { $set: { admin: false } });
+  } catch (err) {
+    console.error("Admin seed error:", err.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`FUELGAUGE running on port ${PORT}`);
+    fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "FuelGaugeFitness/1.0" },
+      body: "data=[out:json][timeout:5];node[amenity=gym](around:1000,27.7172,85.3240);out%20center%201;",
+      signal: AbortSignal.timeout(8000),
+    }).then(r => console.log("Overpass warmup:", r.status)).catch(() => {});
   });
+});
